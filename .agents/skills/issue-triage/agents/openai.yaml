@@ -1,0 +1,4 @@
+interface:
+  display_name: "Issue Triage"
+  short_description: "URL-first GitHub issue and PR triage"
+  default_prompt: "Use $issue-triage to triage the current GitHub repo: scan open issues and PRs, read repo instructions and comments, classify autonomous candidates, owner-decision blockers, and defer/close candidates, then report URL-first cards with risk, proof needed, and next action. Do not mutate GitHub unless explicitly asked."
