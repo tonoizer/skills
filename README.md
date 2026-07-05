@@ -35,6 +35,14 @@ subagents belong in isolated worktrees via `worktree-agents`.
   the canonical `.agents/skills` directory.
 - Keep `.agents/skills` as the source of truth so the two clients do not drift.
 
+## Source And License Notes
+
+- Local workflow skills are licensed under [LICENCE](LICENCE).
+- Sourced and source-inspired skills are tracked in
+  [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+- Keep upstream license files with imported skills, for example
+  `.agents/skills/frontend-design/LICENSE.txt`.
+
 ## User Install
 
 Install or update this pack into user-wide Codex and Claude Code locations:

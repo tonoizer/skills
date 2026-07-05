@@ -4,33 +4,45 @@
     "agent-browser": {
       "source": "vercel-labs/agent-browser",
       "sourceType": "github",
+      "sourceUrl": "https://github.com/vercel-labs/agent-browser",
+      "license": "Apache-2.0",
       "skillPath": ".agents/skills/agent-browser/SKILL.md",
       "computedHash": "ecc7641aea05f85ca3b11e7759d32aaf52fe05946ab4b63739c7bf78a41237a2"
     },
     "find-skills": {
       "source": "vercel-labs/skills",
       "sourceType": "github",
+      "sourceUrl": "https://github.com/vercel-labs/skills/tree/main/skills/find-skills",
+      "license": "MIT",
       "skillPath": ".agents/skills/find-skills/SKILL.md",
       "computedHash": "781bd6d3f9b19f8c9af6b53d8d0e4876d0183841b565db34ca7092ffa412d111"
     },
     "frontend-design": {
-      "source": "anthropics/skills and steipete/agent-scripts",
+      "source": "anthropics/skills",
       "sourceType": "github",
+      "sourceUrl": "https://github.com/anthropics/skills/tree/main/skills/frontend-design",
+      "license": "See .agents/skills/frontend-design/LICENSE.txt",
       "skillPath": ".agents/skills/frontend-design/SKILL.md"
     },
     "deep-review": {
       "source": "steipete/agent-scripts",
       "sourceType": "source-inspired",
+      "sourceUrl": "https://github.com/steipete/agent-scripts/tree/main/skills/github-deep-review",
+      "license": "MIT",
       "skillPath": ".agents/skills/deep-review/SKILL.md"
     },
     "issue-triage": {
       "source": "steipete/agent-scripts",
       "sourceType": "source-inspired",
+      "sourceUrl": "https://github.com/steipete/agent-scripts/tree/main/skills/github-project-triage",
+      "license": "MIT",
       "skillPath": ".agents/skills/issue-triage/SKILL.md"
     },
     "maintainer-orchestrator": {
       "source": "steipete/agent-scripts",
       "sourceType": "source-inspired",
+      "sourceUrl": "https://github.com/steipete/agent-scripts/tree/main/skills/maintainer-orchestrator",
+      "license": "MIT",
       "skillPath": ".agents/skills/maintainer-orchestrator/SKILL.md"
     },
     "bug": {
