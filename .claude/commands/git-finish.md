@@ -1,5 +1,5 @@
 ---
-description: Verify, stage, commit, push, and monitor CI after implementation.
+description: Verify, stage, commit, push, and prepare an implementation handoff.
 argument-hint: <optional commit/push context>
 ---
 
@@ -7,5 +7,6 @@ Use `$git-finish`.
 
 Context: $ARGUMENTS
 
-Check the diff, run relevant verification, stage only intended files, commit or
-push when appropriate, and invoke `$ci-fix` after pushing.
+Check the diff, run relevant verification, stage only intended files, and
+commit or push when appropriate. If a PR follows, hand off immediately; use
+`$ci-fix` only for explicit branch/SHA CI work.

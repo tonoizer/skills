@@ -1,0 +1,4 @@
+interface:
+  display_name: "Resolve Conflicts"
+  short_description: "Resolve merge and rebase conflicts by intent"
+  default_prompt: "Use $resolve-conflicts to finish this conflicted Git operation safely and verify the result."

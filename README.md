@@ -1,15 +1,18 @@
 # Generic Agent Workflow Skills
 
 This repo curates compact, user-wide agent skills for an agentic coding
-factory: issue triage, bug fixing, PR review, CI repair, parallel worktrees,
-and maintainer orchestration.
+factory: decision sharpening, implementation, debugging, review, PR delivery,
+CI repair, parallel worktrees, and maintainer orchestration.
 
 ## Skill Map
 
-- `bug`: reproduce and fix bugs with the smallest high-confidence patch.
-- `debug`: debug and fix failures using a focused debug subagent.
-- `explain`: explain code, changes, errors, and architecture from repository evidence.
+- `grill-me`: resolve consequential decisions one recommended question at a time; `/grilling` is an alias.
+- `implement`: build settled work as small verified slices and leave it review-ready.
+- `debug`: reproduce and fix defects using a focused debug subagent; `/bug` is an alias.
+- `explain`: give a one-shot, read-only explanation from repository evidence.
+- `teach`: build durable learning through explanation, practice, feedback, and retrieval.
 - `code-review`: review a local diff, commit, branch, or PR for correctness risks.
+- `resolve-conflicts`: finish an in-progress conflicted Git operation by intent.
 - `create-pr`: prepare a clear, reviewable pull request on a conventional branch.
 - `babysit`: keep an open PR healthy and merge-ready through review, CI, and conflicts.
 - `split-to-prs`: divide current chat work, changes, a branch, or a PR into coherent PRs.
@@ -17,8 +20,8 @@ and maintainer orchestration.
 - `release-pr`: prepare a release-oriented PR with version, changelog, and rollout proof.
 - `ci-fix`: watch GitHub checks for a PR, branch, or commit and fix high-confidence failures.
 - `issue-triage`: classify the current repo's issue/PR queue.
-- `loop`: process safe issue/PR work one item at a time until green or blocked.
-- `git-finish`: verify, stage, commit, push, and monitor CI after implementation.
+- `loop`: own one item from request or queue selection to its authorized terminal state.
+- `git-finish`: verify, stage, commit, push, and hand off finished implementation work.
 - `worktree-agents`: isolate parallel agent work with git worktrees.
 
 Imported or source-inspired skills kept here:
@@ -28,9 +31,32 @@ Imported or source-inspired skills kept here:
 - `frontend-design`
 - `deep-review`
 - `maintainer-orchestrator`
+- `grill-me`
+- `implement`
+- `resolve-conflicts`
+- `teach`
 
 `code-review` includes the independent read-only subagent review policy. Editing
 subagents belong in isolated worktrees via `worktree-agents`.
+
+## Loop Engineering Flow
+
+`loop` is the orchestrator. It composes the focused skills without duplicating
+their internals:
+
+```text
+request or queue
+  -> grill-me only for consequential unresolved decisions
+  -> implement | debug | review-pr | resolve-conflicts
+  -> verification + code-review
+  -> git-finish + create-pr
+  -> babysit until merge-ready
+  -> optional authorized merge
+  -> clean synchronized base, then repeat
+```
+
+`teach` and `explain` are user-level learning tools, not required stages in the
+engineering loop.
 
 ## Codex And Claude Code
 
@@ -70,7 +96,7 @@ Defaults:
 ## Slash Commands
 
 The `.claude/commands` wrappers are intentionally tiny. They route common
-commands such as `/debug`, `/explain`, `/babysit`, `/split-to-prs`, and `/create-pr` to
+commands such as `/grill-me`, `/implement`, `/debug`, `/teach`, `/babysit`, and `/create-pr` to
 the skills above instead of duplicating instructions.
 
 ## Maintenance Rules

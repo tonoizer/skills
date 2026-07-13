@@ -1,11 +1,12 @@
 ---
 name: debug
-description: Debug and fix using a focused debug subagent. Use when asked for /debug, debug this, investigate and fix an error, determine why something fails, inspect logs or runtime behavior, isolate a regression, or repair a hard-to-localize defect.
+description: Debug and fix using a focused debug subagent. Use when asked for /debug, /bug, debug this, reproduce or fix a bug, investigate an error, determine why something fails, inspect logs or runtime behavior, isolate a regression, or repair a hard-to-localize defect.
 ---
 
 # Debug
 
 Turn symptoms into a reproducible cause with independent evidence, then make the smallest verified fix.
+This is the canonical bug workflow; `/bug` is an alias rather than a separate overlapping skill.
 
 ## Debug Subagent
 
