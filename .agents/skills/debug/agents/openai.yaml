@@ -1,0 +1,4 @@
+interface:
+  display_name: "Debug"
+  short_description: "Debug and fix with an independent subagent"
+  default_prompt: "Use $debug to investigate this failure with a debug subagent, fix the cause, and verify the result."

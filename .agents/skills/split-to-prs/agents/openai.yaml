@@ -1,0 +1,4 @@
+interface:
+  display_name: "Split to PRs"
+  short_description: "Split current work into reviewable PRs"
+  default_prompt: "Use $split-to-prs to divide this chat or current work into small, reviewable pull requests."

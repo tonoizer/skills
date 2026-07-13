@@ -7,8 +7,12 @@ and maintainer orchestration.
 ## Skill Map
 
 - `bug`: reproduce and fix bugs with the smallest high-confidence patch.
+- `debug`: debug and fix failures using a focused debug subagent.
+- `explain`: explain code, changes, errors, and architecture from repository evidence.
 - `code-review`: review a local diff, commit, branch, or PR for correctness risks.
-- `create-pr`: prepare a clear, reviewable pull request.
+- `create-pr`: prepare a clear, reviewable pull request on a conventional branch.
+- `babysit`: keep an open PR healthy and merge-ready through review, CI, and conflicts.
+- `split-to-prs`: divide current chat work, changes, a branch, or a PR into coherent PRs.
 - `review-pr`: inspect an existing PR and decide whether to fix, request changes, or land.
 - `release-pr`: prepare a release-oriented PR with version, changelog, and rollout proof.
 - `ci-fix`: watch GitHub checks for a PR, branch, or commit and fix high-confidence failures.
@@ -66,7 +70,7 @@ Defaults:
 ## Slash Commands
 
 The `.claude/commands` wrappers are intentionally tiny. They route common
-commands such as `/bug`, `/loop`, `/create-pr`, and `/ci-fix` to
+commands such as `/debug`, `/explain`, `/babysit`, `/split-to-prs`, and `/create-pr` to
 the skills above instead of duplicating instructions.
 
 ## Maintenance Rules

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Babysit"
+  short_description: "Keep a PR merge-ready through review and CI"
+  default_prompt: "Use $babysit to keep this PR merge-ready by handling comments, clear conflicts, and CI in a loop."
