@@ -1,0 +1,4 @@
+interface:
+  display_name: "Explain"
+  short_description: "Explain code and changes without editing them"
+  default_prompt: "Use $explain to help me understand this code, change, or system without changing it."

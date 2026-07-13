@@ -14,6 +14,8 @@ updated whenever a sourced skill is added, renamed, or materially rewritten.
 | `deep-review` | Source-inspired workflow | https://github.com/steipete/agent-scripts/tree/main/skills/github-deep-review | MIT |
 | `issue-triage` | Source-inspired workflow | https://github.com/steipete/agent-scripts/tree/main/skills/github-project-triage | MIT |
 | `maintainer-orchestrator` | Source-inspired workflow | https://github.com/steipete/agent-scripts/tree/main/skills/maintainer-orchestrator | MIT |
+| `babysit` | Independently authored workflow inspired by Cursor's built-in PR babysitting concept | https://cursor.com/marketplace | N/A; no source copied |
+| `split-to-prs` | Independently authored workflow inspired by Cursor's built-in PR splitting concept | https://cursor.com/marketplace | N/A; no source copied |
 
 ## Upstream Repositories Consulted
 
@@ -22,6 +24,7 @@ updated whenever a sourced skill is added, renamed, or materially rewritten.
 - Vercel Skills CLI and examples: https://github.com/vercel-labs/skills
 - Vercel agent-browser: https://github.com/vercel-labs/agent-browser
 - Anthropic public skills: https://github.com/anthropics/skills
+- Cursor skills and marketplace descriptions: https://cursor.com/marketplace
 
 ## Repo License
 
