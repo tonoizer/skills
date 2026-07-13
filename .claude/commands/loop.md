@@ -1,11 +1,11 @@
 ---
-description: Triage a queue, pick safe work, ship it, monitor CI, and repeat.
-argument-hint: <optional repo, issue queue, or scope>
+description: Own engineering work from request or queue selection through its authorized terminal state.
+argument-hint: <request, issue, PR, queue, or terminal outcome>
 ---
 
 Use `$loop`.
 
 Scope: $ARGUMENTS
 
-Process one autonomous item at a time. Use subagents only for independent review
-or read-only investigation when they add signal.
+Own one item at a time through clarification, implementation or debugging,
+review, publication, and PR readiness; then return to a clean base and repeat.

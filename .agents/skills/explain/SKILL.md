@@ -1,6 +1,6 @@
 ---
 name: explain
-description: Explain without changing code. Use when asked for /explain, explain this code or diff, how something works, why a design exists, teach a subsystem, trace a request or data flow, or make technical behavior understandable with repository evidence.
+description: Explain code, changes, errors, or architecture once without changing code. Use when asked for /explain, explain this code or diff, how something works, why a design exists, trace a request or data flow, or make technical behavior understandable with repository evidence. For interactive or multi-session learning use teach.
 ---
 
 # Explain

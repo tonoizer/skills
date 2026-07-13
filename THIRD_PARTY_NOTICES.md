@@ -16,6 +16,10 @@ updated whenever a sourced skill is added, renamed, or materially rewritten.
 | `maintainer-orchestrator` | Source-inspired workflow | https://github.com/steipete/agent-scripts/tree/main/skills/maintainer-orchestrator | MIT |
 | `babysit` | Independently authored workflow inspired by Cursor's built-in PR babysitting concept | https://cursor.com/marketplace | N/A; no source copied |
 | `split-to-prs` | Independently authored workflow inspired by Cursor's built-in PR splitting concept | https://cursor.com/marketplace | N/A; no source copied |
+| `grill-me` | Independently authored adaptation of the `grill-me` and `grilling` decision-interview workflows | https://github.com/mattpocock/skills/tree/main/skills/productivity | MIT |
+| `teach` | Independently authored adaptation of the stateful teaching-loop concept | https://github.com/mattpocock/skills/tree/main/skills/productivity/teach | MIT |
+| `implement` | Independently authored adaptation of the specification-to-implementation workflow | https://github.com/mattpocock/skills/tree/main/skills/engineering/implement | MIT |
+| `resolve-conflicts` | Independently authored adaptation of the intent-based conflict-resolution workflow | https://github.com/mattpocock/skills/tree/main/skills/engineering/resolving-merge-conflicts | MIT |
 
 ## Upstream Repositories Consulted
 
@@ -25,6 +29,7 @@ updated whenever a sourced skill is added, renamed, or materially rewritten.
 - Vercel agent-browser: https://github.com/vercel-labs/agent-browser
 - Anthropic public skills: https://github.com/anthropics/skills
 - Cursor skills and marketplace descriptions: https://cursor.com/marketplace
+- Matt Pocock engineering and productivity skills: https://github.com/mattpocock/skills
 
 ## Repo License
 

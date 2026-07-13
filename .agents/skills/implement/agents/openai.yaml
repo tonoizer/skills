@@ -1,0 +1,4 @@
+interface:
+  display_name: "Implement"
+  short_description: "Build settled work into a verified review-ready diff"
+  default_prompt: "Use $implement to build this settled piece of work and leave it verified and review-ready."

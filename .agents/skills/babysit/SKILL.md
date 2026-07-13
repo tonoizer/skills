@@ -1,6 +1,6 @@
 ---
 name: babysit
-description: Keep a PR merge-ready by triaging comments, resolving clear conflicts, and fixing CI in a loop. Use when asked for /babysit, babysit a PR, stay with a PR until it is ready, handle incoming review feedback, resolve merge conflicts, repair CI failures, or repeatedly recheck a PR until it is mergeable or genuinely blocked.
+description: Keep a PR merge-ready by triaging comments, resolving clear PR merge conflicts, and fixing CI in a loop. Use when asked for /babysit, babysit a PR, stay with a PR until it is ready, handle incoming review feedback, repair a PR branch conflict with its base, fix PR CI failures, or repeatedly recheck a PR until it is mergeable or genuinely blocked. For an active local Git operation use resolve-conflicts.
 ---
 
 # Babysit
