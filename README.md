@@ -8,6 +8,7 @@ CI repair, parallel worktrees, and maintainer orchestration.
 
 - `grill-me`: resolve consequential decisions one recommended question at a time; `/grilling` is an alias.
 - `implement`: build settled work as small verified slices and leave it review-ready.
+- `autoresearch`: improve a measurable objective through bounded, hypothesis-driven experiments.
 - `debug`: reproduce and fix defects using a focused debug subagent; `/bug` is an alias.
 - `explain`: give a one-shot, read-only explanation from repository evidence.
 - `teach`: build durable learning through explanation, practice, feedback, and retrieval.
@@ -35,6 +36,7 @@ Imported or source-inspired skills kept here:
 - `implement`
 - `resolve-conflicts`
 - `teach`
+- `autoresearch`
 
 `code-review` includes the independent read-only subagent review policy. Editing
 subagents belong in isolated worktrees via `worktree-agents`.
@@ -47,7 +49,7 @@ their internals:
 ```text
 request or queue
   -> grill-me only for consequential unresolved decisions
-  -> implement | debug | review-pr | resolve-conflicts
+  -> implement | autoresearch | debug | review-pr | resolve-conflicts
   -> verification + code-review
   -> git-finish + create-pr
   -> babysit until merge-ready
@@ -57,6 +59,12 @@ request or queue
 
 `teach` and `explain` are user-level learning tools, not required stages in the
 engineering loop.
+
+`autoresearch` is the optimization specialist inside the loop: use it when
+there is a reproducible metric and a bounded experiment budget. It adds a
+baseline, one-hypothesis-at-a-time iteration, result logging, guardrails, and
+reversible keep/revert decisions. It does not replace `implement` for feature
+work or `loop` for end-to-end task ownership.
 
 ## Codex And Claude Code
 
@@ -96,7 +104,7 @@ Defaults:
 ## Slash Commands
 
 The `.claude/commands` wrappers are intentionally tiny. They route common
-commands such as `/grill-me`, `/implement`, `/debug`, `/teach`, `/babysit`, and `/create-pr` to
+commands such as `/grill-me`, `/implement`, `/autoresearch`, `/debug`, `/teach`, `/babysit`, and `/create-pr` to
 the skills above instead of duplicating instructions.
 
 ## Maintenance Rules

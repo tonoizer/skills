@@ -20,6 +20,7 @@ updated whenever a sourced skill is added, renamed, or materially rewritten.
 | `teach` | Independently authored adaptation of the stateful teaching-loop concept | https://github.com/mattpocock/skills/tree/main/skills/productivity/teach | MIT |
 | `implement` | Independently authored adaptation of the specification-to-implementation workflow | https://github.com/mattpocock/skills/tree/main/skills/engineering/implement | MIT |
 | `resolve-conflicts` | Independently authored adaptation of the intent-based conflict-resolution workflow | https://github.com/mattpocock/skills/tree/main/skills/engineering/resolving-merge-conflicts | MIT |
+| `autoresearch` | Independently authored generalization of the bounded experiment-loop idea | https://github.com/karpathy/autoresearch | MIT; no source copied |
 
 ## Upstream Repositories Consulted
 
@@ -30,6 +31,7 @@ updated whenever a sourced skill is added, renamed, or materially rewritten.
 - Anthropic public skills: https://github.com/anthropics/skills
 - Cursor skills and marketplace descriptions: https://cursor.com/marketplace
 - Matt Pocock engineering and productivity skills: https://github.com/mattpocock/skills
+- Karpathy autoresearch: https://github.com/karpathy/autoresearch
 
 ## Repo License
 
