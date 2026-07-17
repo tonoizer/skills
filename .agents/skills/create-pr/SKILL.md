@@ -18,7 +18,7 @@ Create a reviewable PR with proof.
 7. Commit with explicit paths when commits are needed.
 8. Push the current branch.
 9. Open a PR with a Conventional Commit-style title, summary, testing, risks, and linked issue.
-10. Always assign the PR to the skill operator so ownership is explicit and reviewable. Resolve the assignee login from `references/defaults.md`. Prefer `gh pr create ... --assignee <login>`. If the PR was opened without an assignee, run `gh pr edit <n> --add-assignee <login>` immediately after. Never leave the PR unassigned. Do not use `@me` when the authenticated GitHub actor is a bot or automation identity.
+10. Always assign the PR to the skill operator so ownership is explicit and reviewable. Resolve the assignee login from `references/defaults.md`. Prefer `gh pr create ... --assignee <login>`. If the PR was opened without an assignee, run `gh pr edit <n> --add-assignee <login>` immediately after. Never leave the PR unassigned. Do not use `@me` when the authenticated GitHub actor is a bot or automation identity. If assignment fails (for example missing `assignees` permission on an automation token), retry once, then report the PR URL and the permission failure as a follow-up instead of treating the PR as fully owned.
 11. Read the initial PR checks and report their current state.
 
 ## PR Body
