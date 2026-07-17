@@ -18,24 +18,28 @@ Create a reviewable PR with proof.
 7. Commit with explicit paths when commits are needed.
 8. Push the current branch.
 9. Create the PR with the GitHub CLI (`gh`). `gh` is mandatory and must already be available. Open a PR with a Conventional Commit-style title, summary, testing, risks, and linked issue, and always assign the resolved operator in the same create step.
-10. Resolve the assignee login dynamically from `gh` / git. Never hardcode a username. Prefer this order:
+10. Resolve the assignee login dynamically from `gh` / git. Never hardcode a username. Accept only a real GitHub login (`^[A-Za-z0-9-]+$`); ignore API error payloads and bot identities. Prefer this order:
 
 ```bash
-# 1) Authenticated human login from gh
-gh api user --jq .login
+LOGIN=""
+if candidate=$(gh api user --jq .login 2>/dev/null) \
+  && [[ "$candidate" =~ ^[A-Za-z0-9-]+$ ]]; then
+  LOGIN="$candidate"
+elif candidate=$(gh api graphql -f query='query { viewer { login } }' --jq .data.viewer.login 2>/dev/null) \
+  && [[ "$candidate" =~ ^[A-Za-z0-9-]+$ ]]; then
+  LOGIN="$candidate"
+elif candidate=$(gh repo view --json owner --jq .owner.login 2>/dev/null) \
+  && [[ "$candidate" =~ ^[A-Za-z0-9-]+$ ]]; then
+  LOGIN="$candidate"
+fi
 
-# 2) If that fails, GraphQL viewer when it is not a bot
-gh api graphql -f query='query { viewer { login } }' --jq .data.viewer.login
-
-# 3) Repo owner for a user-owned repo
-gh repo view --json owner --jq .owner.login
-
-# 4) Latest non-bot commit author on the default branch, mapped via gh if needed
-git log origin/$(gh repo view --json defaultBranchRef --jq .defaultBranchRef.name) \
-  --format='%an <%ae>' | head -20
+# Skip bot / automation identities
+case "$LOGIN" in
+  *"[bot]"*|cursor|cursoragent|"") LOGIN="" ;;
+esac
 ```
 
-Skip bot logins such as `*[bot]`, `cursor`, or `cursoragent`. Then create the PR:
+If still empty, inspect recent default-branch commit authors via git and map the human operator to a GitHub login with `gh`. See `references/resolve-assignee.md`. Then create the PR:
 
 ```bash
 gh pr create \
@@ -51,10 +55,10 @@ gh pr create \
 - ...
 EOF
 )" \
-  --assignee "<resolved-login>"
+  --assignee "$LOGIN"
 ```
 
-Never leave the PR unassigned. Prefer `--assignee <resolved-login>` on create. If the PR already exists without an assignee, run `gh pr edit --add-assignee <resolved-login>`. See `references/resolve-assignee.md` for the full playbook.
+Never leave the PR unassigned. Prefer `--assignee "$LOGIN"` on create. If the PR already exists without an assignee, run `gh pr edit --add-assignee "$LOGIN"`.
 11. Read the initial PR checks and report their current state.
 
 ## PR Body

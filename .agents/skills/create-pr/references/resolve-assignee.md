@@ -8,8 +8,11 @@ Never hardcode a GitHub username. Resolve the assignee from the local
 1. `gh api user --jq .login`
 2. `gh api graphql -f query='query { viewer { login } }' --jq .data.viewer.login`
 3. `gh repo view --json owner --jq .owner.login` when the owner is a user
-4. Recent default-branch commit authors from git (`git log`), then map to a
-   GitHub login with `gh` when the author is clearly the human operator
+4. Recent default-branch commit authors from git, then map to a GitHub login
+   with `gh` when the author is clearly the human operator
+
+Accept only a real login matching `^[A-Za-z0-9-]+$`. If a `gh` call prints an
+error JSON body instead of a login, treat it as unresolved and continue.
 
 ## Skip these identities
 
