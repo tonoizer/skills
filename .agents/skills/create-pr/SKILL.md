@@ -17,8 +17,49 @@ Create a reviewable PR with proof.
 6. Run relevant verification from repo instructions.
 7. Commit with explicit paths when commits are needed.
 8. Push the current branch.
-9. Open a PR with a Conventional Commit-style title, summary, testing, risks, and linked issue.
-10. Read the initial PR checks and report their current state.
+9. Create the PR with the GitHub CLI (`gh`). `gh` is mandatory and must already be available. Open a PR with a Conventional Commit-style title, summary, testing, risks, and linked issue, and always assign the resolved operator in the same create step.
+10. Resolve the assignee login dynamically from `gh` / git. Never hardcode a username. Accept only a real GitHub login (`^[A-Za-z0-9-]+$`); ignore API error payloads and bot identities. Prefer this order:
+
+```bash
+LOGIN=""
+if candidate=$(gh api user --jq .login 2>/dev/null) \
+  && [[ "$candidate" =~ ^[A-Za-z0-9-]+$ ]]; then
+  LOGIN="$candidate"
+elif candidate=$(gh api graphql -f query='query { viewer { login } }' --jq .data.viewer.login 2>/dev/null) \
+  && [[ "$candidate" =~ ^[A-Za-z0-9-]+$ ]]; then
+  LOGIN="$candidate"
+elif candidate=$(gh repo view --json owner --jq .owner.login 2>/dev/null) \
+  && [[ "$candidate" =~ ^[A-Za-z0-9-]+$ ]]; then
+  LOGIN="$candidate"
+fi
+
+# Skip bot / automation identities
+case "$LOGIN" in
+  *"[bot]"*|cursor|cursoragent|"") LOGIN="" ;;
+esac
+```
+
+If still empty, inspect recent default-branch commit authors via git and map the human operator to a GitHub login with `gh`. See `references/resolve-assignee.md`. Then create the PR:
+
+```bash
+gh pr create \
+  --title "<conventional title>" \
+  --body "$(cat <<'EOF'
+## Summary
+- ...
+
+## Testing
+- [ ] `<command>`
+
+## Risks
+- ...
+EOF
+)" \
+  --assignee "$LOGIN"
+```
+
+Never leave the PR unassigned. Prefer `--assignee "$LOGIN"` on create. If the PR already exists without an assignee, run `gh pr edit --add-assignee "$LOGIN"`.
+11. Read the initial PR checks and report their current state.
 
 ## PR Body
 
