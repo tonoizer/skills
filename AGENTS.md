@@ -17,7 +17,7 @@ review, PR, CI, and maintainer loops.
 ## Verify
 
 - Run `bash -n .agents/skills/ci-fix/scripts/watch-gh-checks.sh` after editing the CI watcher.
-- Run `bash -n scripts/install-user-skills.sh` after editing the installer.
+- Run `bash -n scripts/install.sh` after editing the installer.
 - Validate every `SKILL.md` has YAML frontmatter with `name` and `description`.
 - Check slash command wrappers point to existing skills.
 

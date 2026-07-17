@@ -78,13 +78,13 @@ engineering loop.
 Install or update this pack into user-wide Codex and Claude Code locations:
 
 ```bash
-scripts/install-user-skills.sh
+scripts/install.sh
 ```
 
 Preview changes first:
 
 ```bash
-scripts/install-user-skills.sh --dry-run
+scripts/install.sh --dry-run
 ```
 
 Defaults:
@@ -110,5 +110,5 @@ the skills above instead of duplicating instructions.
 ```bash
 find .agents/skills -name SKILL.md -print
 bash -n .agents/skills/ci-fix/scripts/watch-gh-checks.sh
-bash -n scripts/install-user-skills.sh
+bash -n scripts/install.sh
 ```

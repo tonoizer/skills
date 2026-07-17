@@ -6,7 +6,7 @@ usage() {
 Install or update this repo's agent workflow skills for the current user.
 
 Usage:
-  scripts/install-user-skills.sh [options]
+  scripts/install.sh [options]
 
 Options:
   --dry-run          Show what would change.
