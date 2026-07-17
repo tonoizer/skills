@@ -17,8 +17,25 @@ Create a reviewable PR with proof.
 6. Run relevant verification from repo instructions.
 7. Commit with explicit paths when commits are needed.
 8. Push the current branch.
-9. Create the PR with the GitHub CLI (`gh`). `gh` is mandatory and must already be available. Open a PR with a Conventional Commit-style title, summary, testing, risks, and linked issue, and always assign the skill operator in the same create step.
-10. Resolve the assignee login from `references/defaults.md`, then run:
+9. Create the PR with the GitHub CLI (`gh`). `gh` is mandatory and must already be available. Open a PR with a Conventional Commit-style title, summary, testing, risks, and linked issue, and always assign the resolved operator in the same create step.
+10. Resolve the assignee login dynamically from `gh` / git. Never hardcode a username. Prefer this order:
+
+```bash
+# 1) Authenticated human login from gh
+gh api user --jq .login
+
+# 2) If that fails, GraphQL viewer when it is not a bot
+gh api graphql -f query='query { viewer { login } }' --jq .data.viewer.login
+
+# 3) Repo owner for a user-owned repo
+gh repo view --json owner --jq .owner.login
+
+# 4) Latest non-bot commit author on the default branch, mapped via gh if needed
+git log origin/$(gh repo view --json defaultBranchRef --jq .defaultBranchRef.name) \
+  --format='%an <%ae>' | head -20
+```
+
+Skip bot logins such as `*[bot]`, `cursor`, or `cursoragent`. Then create the PR:
 
 ```bash
 gh pr create \
@@ -34,10 +51,10 @@ gh pr create \
 - ...
 EOF
 )" \
-  --assignee "<operator-login>"
+  --assignee "<resolved-login>"
 ```
 
-Never leave the PR unassigned. Prefer `--assignee <operator-login>` on create. If the PR already exists without an assignee, run `gh pr edit --add-assignee <operator-login>`.
+Never leave the PR unassigned. Prefer `--assignee <resolved-login>` on create. If the PR already exists without an assignee, run `gh pr edit --add-assignee <resolved-login>`. See `references/resolve-assignee.md` for the full playbook.
 11. Read the initial PR checks and report their current state.
 
 ## PR Body
