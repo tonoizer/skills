@@ -24,6 +24,7 @@ CI repair, parallel worktrees, and maintainer orchestration.
 - `loop`: own one item from request or queue selection to its authorized terminal state.
 - `git-finish`: verify, stage, commit, push, and hand off finished implementation work.
 - `worktree-agents`: isolate parallel agent work with git worktrees.
+- `humanizer`: rewrite prose to remove AI writing tells while preserving meaning.
 
 Imported or source-inspired skills kept here:
 
@@ -37,6 +38,7 @@ Imported or source-inspired skills kept here:
 - `resolve-conflicts`
 - `teach`
 - `readout`
+- `humanizer`
 
 `code-review` includes the independent read-only subagent review policy. Editing
 subagents belong in isolated worktrees via `worktree-agents`.
@@ -98,7 +100,7 @@ Defaults:
 ## Slash Commands
 
 The `.claude/commands` wrappers are intentionally tiny. They route common
-commands such as `/grill-me`, `/implement`, `/debug`, `/teach`, `/readout`, `/babysit`, and `/create-pr` to
+commands such as `/grill-me`, `/implement`, `/debug`, `/teach`, `/readout`, `/humanizer`, `/babysit`, and `/create-pr` to
 the skills above instead of duplicating instructions.
 
 ## Maintenance Rules

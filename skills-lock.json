@@ -89,6 +89,13 @@
       "source": "local",
       "sourceType": "local",
       "skillPath": ".agents/skills/worktree-agents/SKILL.md"
+    },
+    "humanizer": {
+      "source": "blader/humanizer",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/blader/humanizer",
+      "license": "MIT",
+      "skillPath": ".agents/skills/humanizer/SKILL.md"
     }
   }
 }
