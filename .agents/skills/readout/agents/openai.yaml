@@ -1,0 +1,4 @@
+interface:
+  display_name: "Readout"
+  short_description: "Create grounded interactive HTML code guides"
+  default_prompt: "Use $readout to turn this investigation into a shareable HTML guide."

@@ -20,6 +20,7 @@ updated whenever a sourced skill is added, renamed, or materially rewritten.
 | `teach` | Independently authored adaptation of the stateful teaching-loop concept | https://github.com/mattpocock/skills/tree/main/skills/productivity/teach | MIT |
 | `implement` | Independently authored adaptation of the specification-to-implementation workflow | https://github.com/mattpocock/skills/tree/main/skills/engineering/implement | MIT |
 | `resolve-conflicts` | Independently authored adaptation of the intent-based conflict-resolution workflow | https://github.com/mattpocock/skills/tree/main/skills/engineering/resolving-merge-conflicts | MIT |
+| `readout` | Adapted workflow, document template, and source-pane concept | https://github.com/warpdotdev/common-skills/tree/main/.agents/skills/readout | MIT; see `.agents/skills/readout/LICENSE.txt` |
 
 ## Upstream Repositories Consulted
 
@@ -30,6 +31,7 @@ updated whenever a sourced skill is added, renamed, or materially rewritten.
 - Anthropic public skills: https://github.com/anthropics/skills
 - Cursor skills and marketplace descriptions: https://cursor.com/marketplace
 - Matt Pocock engineering and productivity skills: https://github.com/mattpocock/skills
+- Warp common skills: https://github.com/warpdotdev/common-skills
 
 ## Repo License
 

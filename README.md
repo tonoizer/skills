@@ -11,6 +11,7 @@ CI repair, parallel worktrees, and maintainer orchestration.
 - `debug`: reproduce and fix defects using a focused debug subagent; `/bug` is an alias.
 - `explain`: give a one-shot, read-only explanation from repository evidence.
 - `teach`: build durable learning through explanation, practice, feedback, and retrieval.
+- `readout`: turn an investigation or fresh codebase question into a durable interactive HTML guide.
 - `code-review`: review a local diff, commit, branch, or PR for correctness risks.
 - `resolve-conflicts`: finish an in-progress conflicted Git operation by intent.
 - `create-pr`: prepare a clear, reviewable pull request on a conventional branch.
@@ -35,6 +36,7 @@ Imported or source-inspired skills kept here:
 - `implement`
 - `resolve-conflicts`
 - `teach`
+- `readout`
 
 `code-review` includes the independent read-only subagent review policy. Editing
 subagents belong in isolated worktrees via `worktree-agents`.
@@ -55,8 +57,8 @@ request or queue
   -> clean synchronized base, then repeat
 ```
 
-`teach` and `explain` are user-level learning tools, not required stages in the
-engineering loop.
+`teach`, `explain`, and `readout` are user-level learning and documentation
+tools, not required stages in the engineering loop.
 
 ## Codex And Claude Code
 
@@ -96,7 +98,7 @@ Defaults:
 ## Slash Commands
 
 The `.claude/commands` wrappers are intentionally tiny. They route common
-commands such as `/grill-me`, `/implement`, `/debug`, `/teach`, `/babysit`, and `/create-pr` to
+commands such as `/grill-me`, `/implement`, `/debug`, `/teach`, `/readout`, `/babysit`, and `/create-pr` to
 the skills above instead of duplicating instructions.
 
 ## Maintenance Rules
