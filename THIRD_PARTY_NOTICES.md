@@ -21,6 +21,7 @@ updated whenever a sourced skill is added, renamed, or materially rewritten.
 | `implement` | Independently authored adaptation of the specification-to-implementation workflow | https://github.com/mattpocock/skills/tree/main/skills/engineering/implement | MIT |
 | `resolve-conflicts` | Independently authored adaptation of the intent-based conflict-resolution workflow | https://github.com/mattpocock/skills/tree/main/skills/engineering/resolving-merge-conflicts | MIT |
 | `readout` | Adapted workflow, document template, and source-pane concept | https://github.com/warpdotdev/common-skills/tree/main/.agents/skills/readout | MIT; see `.agents/skills/readout/LICENSE.txt` |
+| `humanizer` | Adapted AI-writing cleanup skill and pattern catalog | https://github.com/blader/humanizer | MIT; see `.agents/skills/humanizer/LICENSE.txt` |
 
 ## Upstream Repositories Consulted
 
@@ -32,6 +33,7 @@ updated whenever a sourced skill is added, renamed, or materially rewritten.
 - Cursor skills and marketplace descriptions: https://cursor.com/marketplace
 - Matt Pocock engineering and productivity skills: https://github.com/mattpocock/skills
 - Warp common skills: https://github.com/warpdotdev/common-skills
+- blader humanizer: https://github.com/blader/humanizer
 
 ## Repo License
 
