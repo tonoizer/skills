@@ -43,7 +43,7 @@ The exact commit must also be reachable from an `origin/*` remote-tracking ref. 
 
 - Pass each known-public slug with `--public-repo ORG/REPO`.
 - For a private or unknown repository, use `--private-source-approved` only after the user explicitly accepts that source excerpts will travel inside the HTML.
-- Do not embed paths likely to contain credentials, keys, certificates, environment files, or other secrets.
+- Do not embed paths likely to contain credentials, keys, certificates, environment files, or other secrets. The helper refuses common credential filenames, private-key formats, token prefixes, and secret assignments as defense in depth, but this is not exhaustive secret scanning; inspect cited private-source windows before approving embedding.
 - If embedding is declined or unavailable, leave the pinned links intact.
 
 When GitHub CLI access is available, determine visibility with `gh repo view ORG/REPO --json visibility --jq .visibility`. Treat a failed or unavailable lookup as unknown, never as public.

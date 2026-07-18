@@ -6,9 +6,11 @@ from __future__ import annotations
 import argparse
 import html
 import json
+import os
 import re
 import subprocess
 import sys
+import tempfile
 from collections import defaultdict
 from pathlib import Path
 from urllib.parse import unquote
@@ -18,17 +20,24 @@ BLOB_RE = re.compile(
     r"([0-9a-fA-F]{40})/([^#\"'<>\s?]+)#L(\d+)(?:-L(\d+))?"
 )
 SNIPPET_RE = re.compile(
-    r'<script type="application/json" data-code-snippets>.*?</script>\s*', re.S
+    r'<script\b(?=[^>]*\sdata-code-snippets(?:\s|=|>))[^>]*>.*?</script>\s*', re.I | re.S
 )
-SENSITIVE_PARTS = {
-    ".env", "credentials", "credential", "id_rsa", "id_ed25519",
-    "private-key", "private_key", "secrets", "secret", "token",
+SENSITIVE_DIRECTORIES = {".aws", ".kube", ".ssh"}
+SENSITIVE_NAMES = {
+    ".dockercfg", ".netrc", ".npmrc", ".pypirc", "auth.json",
+    "credentials", "credentials.json", "id_ed25519", "id_rsa", "kubeconfig",
+    "private-key", "private_key", "secrets.json", "secrets.yaml", "secrets.yml",
+    "service-account.json", "service_account.json",
 }
 SENSITIVE_SUFFIXES = {".pem", ".p12", ".pfx", ".key", ".keystore"}
 SECRET_CONTENT_RE = re.compile(
     r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"
     r"|AKIA[0-9A-Z]{16}"
-    r"|(?i:(?:password|passwd|api[_-]?key|access[_-]?token|client[_-]?secret)\s*[:=]\s*['\"][^'\"]{12,}['\"])",
+    r"|(?i:(?:github_pat_|gh[pousr]_|npm_|sk-|xox[baprs]-)[A-Za-z0-9_-]{16,})"
+    r"|(?i:(?:password|passwd|api[_-]?key|access[_-]?token|client[_-]?secret|github[_-]?token|token)"
+    r"\s*[:=]\s*['\"][^'\"]{12,}['\"])"
+    r"|(?:(?:export\s+)?(?:PASSWORD|PASSWD|API_KEY|ACCESS_TOKEN|CLIENT_SECRET|GITHUB_TOKEN|TOKEN)"
+    r"\s*=\s*(?=[^\s#'\"]{12,}(?:\s|#|$))(?=[^\s#'\"]*\d)[A-Za-z0-9_./+=:-]+)",
 )
 
 
@@ -58,10 +67,9 @@ def commit_on_origin(checkout: Path, commit: str) -> bool:
 def sensitive(path: str) -> bool:
     parts = {part.lower() for part in Path(path).parts}
     name = Path(path).name.lower()
-    stem_tokens = set(re.split(r"[^a-z0-9]+", Path(name).stem))
     return (
-        bool(parts & SENSITIVE_PARTS)
-        or bool(stem_tokens & SENSITIVE_PARTS)
+        bool(parts & SENSITIVE_DIRECTORIES)
+        or name in SENSITIVE_NAMES
         or name.startswith(".env")
         or Path(name).suffix in SENSITIVE_SUFFIXES
     )
@@ -78,6 +86,24 @@ def merge_ranges(ranges: list[tuple[int, int]], line_count: int, context: int) -
     return [(start, end) for start, end in merged]
 
 
+def atomic_write(path: Path, content: str) -> None:
+    """Replace a document without exposing a partially written payload."""
+    mode = path.stat().st_mode & 0o777
+    temporary: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            "w", encoding="utf-8", dir=path.parent, prefix=f".{path.name}.", delete=False
+        ) as handle:
+            handle.write(content)
+            temporary = Path(handle.name)
+        os.chmod(temporary, mode)
+        temporary.replace(path)
+        temporary = None
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("doc", type=Path)
@@ -92,7 +118,8 @@ def main() -> int:
     if not 0 <= args.context <= 20:
         parser.error("--context must be between 0 and 20")
 
-    source = args.doc.read_text(encoding="utf-8")
+    original_source = args.doc.read_text(encoding="utf-8")
+    source = SNIPPET_RE.sub("", original_source)
     refs: dict[tuple[str, str, str], list[tuple[int, int]]] = defaultdict(list)
     for match in BLOB_RE.finditer(html.unescape(source)):
         org, repo, commit, encoded_path, start, end = match.groups()
@@ -103,6 +130,8 @@ def main() -> int:
         refs[(f"{org}/{repo}", commit.lower(), path)].append((first, last))
 
     if not refs:
+        if source != original_source:
+            atomic_write(args.doc, source)
         print("No commit-pinned GitHub line links found; nothing to embed.")
         return 0
 
@@ -175,28 +204,34 @@ def main() -> int:
             snippets[label] = {"commit": commit, "path": path, "windows": windows}
 
     if errors:
+        if source != original_source:
+            atomic_write(args.doc, source)
         for error in errors:
             print(f"error: {error}", file=sys.stderr)
         return 1
     if total_bytes > args.max_total_bytes:
+        if source != original_source:
+            atomic_write(args.doc, source)
         print(f"error: embedded excerpts exceed {args.max_total_bytes} bytes", file=sys.stderr)
         return 1
     if not snippets:
+        if source != original_source:
+            atomic_write(args.doc, source)
         print("No excerpts embedded; pinned links remain available.")
         return 0
 
     payload = json.dumps(snippets, ensure_ascii=False).replace("</", "<\\/")
     block = f'<script type="application/json" data-code-snippets>\n{payload}\n</script>\n'
-    if SNIPPET_RE.search(source):
-        source = SNIPPET_RE.sub(lambda _: block, source, count=1)
-    elif "<style data-code-pane>" in source:
+    if "<style data-code-pane>" in source:
         source = source.replace("<style data-code-pane>", block + "<style data-code-pane>", 1)
     elif "</body>" in source:
         source = source.replace("</body>", block + "</body>", 1)
     else:
+        if source != original_source:
+            atomic_write(args.doc, source)
         print("error: readout has no </body> insertion point", file=sys.stderr)
         return 1
-    args.doc.write_text(source, encoding="utf-8")
+    atomic_write(args.doc, source)
     print(f"Embedded {len(snippets)} exact-commit file excerpt set(s), {total_bytes} bytes -> {args.doc}")
     return 0
 

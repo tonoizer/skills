@@ -50,6 +50,8 @@ def blob_reference(href: str) -> tuple[str, int, int] | str | None:
     line_match = re.fullmatch(r"L(\d+)(?:-L(\d+))?", parsed.fragment)
     assert line_match is not None
     start, end = int(line_match.group(1)), int(line_match.group(2) or line_match.group(1))
+    if start < 1 or end < 1:
+        return ""
     if start > end:
         start, end = end, start
     return f"{org.lower()}/{repo.lower()}@{commit.lower()}:{unquote(path)}", start, end
