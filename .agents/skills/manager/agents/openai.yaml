@@ -1,0 +1,4 @@
+interface:
+  display_name: "Manager"
+  short_description: "Coordinate builder and reviewer agent sessions"
+  default_prompt: "Use $manager to turn this plan into a reviewed implementation using fresh native worker sessions."

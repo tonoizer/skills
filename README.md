@@ -21,6 +21,7 @@ CI repair, parallel worktrees, and maintainer orchestration.
 - `release-pr`: prepare a release-oriented PR with version, changelog, and rollout proof.
 - `ci-fix`: watch GitHub checks for a PR, branch, or commit and fix high-confidence failures.
 - `issue-triage`: classify the current repo's issue/PR queue.
+- `manager`: turn a settled feature plan into a built, reviewed, and repaired change through fresh native agent sessions.
 - `loop`: own one item from request or queue selection to its authorized terminal state.
 - `git-finish`: verify, stage, commit, push, and hand off finished implementation work.
 - `worktree-agents`: isolate parallel agent work with git worktrees.
@@ -59,12 +60,17 @@ request or queue
   -> clean synchronized base, then repeat
 ```
 
+`manager` is the session orchestrator for a settled feature. It keeps the main
+chat in charge, starts a fresh builder, then a fresh reviewer, and sends
+supported findings to a new fix implementer.
+
 `teach`, `explain`, and `readout` are user-level learning and documentation
 tools, not required stages in the engineering loop.
 
-## Codex And Claude Code
+## Supported Agent Hosts
 
-- Codex reads the canonical skills from `.agents/skills`.
+- Codex, Cursor, OpenCode, and GitHub Copilot can read the canonical skills
+  installed under `.agents/skills`.
 - Claude Code reads the same skills through `.claude/skills`, which points to
   the canonical `.agents/skills` directory.
 - Keep `.agents/skills` as the source of truth so the two clients do not drift.
@@ -79,7 +85,7 @@ tools, not required stages in the engineering loop.
 
 ## User Install
 
-Install or update this pack into user-wide Codex and Claude Code locations:
+Install or update this pack into user-wide supported-agent locations:
 
 ```bash
 scripts/install.sh
@@ -100,7 +106,7 @@ Defaults:
 ## Slash Commands
 
 The `.claude/commands` wrappers are intentionally tiny. They route common
-commands such as `/grill-me`, `/implement`, `/debug`, `/teach`, `/readout`, `/humanizer`, `/babysit`, and `/create-pr` to
+commands such as `/manager`, `/grill-me`, `/implement`, `/debug`, `/teach`, `/readout`, `/humanizer`, `/babysit`, and `/create-pr` to
 the skills above instead of duplicating instructions.
 
 ## Maintenance Rules

@@ -60,6 +60,11 @@
       "sourceType": "local",
       "skillPath": ".agents/skills/create-pr/SKILL.md"
     },
+    "manager": {
+      "source": "local",
+      "sourceType": "local",
+      "skillPath": ".agents/skills/manager/SKILL.md"
+    },
     "review-pr": {
       "source": "local",
       "sourceType": "local",
