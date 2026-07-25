@@ -101,6 +101,13 @@
       "sourceUrl": "https://github.com/blader/humanizer",
       "license": "MIT",
       "skillPath": ".agents/skills/humanizer/SKILL.md"
+    },
+    "autoreview": {
+      "source": "openclaw/agent-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/openclaw/agent-skills/tree/main/skills/autoreview",
+      "license": "MIT",
+      "skillPath": ".agents/skills/autoreview/SKILL.md"
     }
   }
 }

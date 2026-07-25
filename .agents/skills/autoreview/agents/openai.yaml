@@ -1,0 +1,4 @@
+interface:
+  display_name: "Auto Review"
+  short_description: "Pre-commit/ship structured code review closeout"
+  default_prompt: "Use $autoreview as a closeout code review before commit or ship."

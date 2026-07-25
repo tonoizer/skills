@@ -13,6 +13,7 @@ CI repair, parallel worktrees, and maintainer orchestration.
 - `teach`: build durable learning through explanation, practice, feedback, and retrieval.
 - `readout`: turn an investigation or fresh codebase question into a durable interactive HTML guide.
 - `code-review`: review a local diff, commit, branch, or PR for correctness risks.
+- `autoreview`: structured pre-commit/ship closeout review via the OpenClaw helper.
 - `resolve-conflicts`: finish an in-progress conflicted Git operation by intent.
 - `create-pr`: prepare a clear, reviewable pull request on a conventional branch.
 - `babysit`: keep an open PR healthy and merge-ready through review, CI, and conflicts.
@@ -40,6 +41,7 @@ Imported or source-inspired skills kept here:
 - `teach`
 - `readout`
 - `humanizer`
+- `autoreview`
 
 `code-review` includes the independent read-only subagent review policy. Editing
 subagents belong in isolated worktrees via `worktree-agents`.
@@ -106,7 +108,7 @@ Defaults:
 ## Slash Commands
 
 The `.claude/commands` wrappers are intentionally tiny. They route common
-commands such as `/manager`, `/grill-me`, `/implement`, `/debug`, `/teach`, `/readout`, `/humanizer`, `/babysit`, and `/create-pr` to
+commands such as `/manager`, `/grill-me`, `/implement`, `/debug`, `/teach`, `/readout`, `/humanizer`, `/autoreview`, `/babysit`, and `/create-pr` to
 the skills above instead of duplicating instructions.
 
 ## Maintenance Rules

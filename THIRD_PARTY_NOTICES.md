@@ -22,10 +22,12 @@ updated whenever a sourced skill is added, renamed, or materially rewritten.
 | `resolve-conflicts` | Independently authored adaptation of the intent-based conflict-resolution workflow | https://github.com/mattpocock/skills/tree/main/skills/engineering/resolving-merge-conflicts | MIT |
 | `readout` | Adapted workflow, document template, and source-pane concept | https://github.com/warpdotdev/common-skills/tree/main/.agents/skills/readout | MIT; see `.agents/skills/readout/LICENSE.txt` |
 | `humanizer` | Adapted AI-writing cleanup skill and pattern catalog | https://github.com/blader/humanizer | MIT; see `.agents/skills/humanizer/LICENSE.txt` |
+| `autoreview` | Imported skill with helper scripts and tests | https://github.com/openclaw/agent-skills/tree/main/skills/autoreview | MIT; see `.agents/skills/autoreview/LICENSE.txt` |
 
 ## Upstream Repositories Consulted
 
 - Peter Steinberger agent scripts: https://github.com/steipete/agent-scripts
+- OpenClaw agent skills: https://github.com/openclaw/agent-skills
 - Addy Osmani agent skills: https://github.com/addyosmani/agent-skills
 - Vercel Skills CLI and examples: https://github.com/vercel-labs/skills
 - Vercel agent-browser: https://github.com/vercel-labs/agent-browser
