@@ -1,4 +1,4 @@
 interface:
   display_name: "Grill Me"
-  short_description: "Stress-test decisions one question at a time"
+  short_description: "Sharpen a plan through one-question interview"
   default_prompt: "Use $grill-me to stress-test this idea one decision at a time before acting."
