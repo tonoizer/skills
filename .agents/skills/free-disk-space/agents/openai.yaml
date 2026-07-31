@@ -1,4 +1,0 @@
-interface:
-  display_name: "Free Disk Space"
-  short_description: "Audit and reclaim macOS disk space safely"
-  default_prompt: "Use $free-disk-space to audit my Mac storage and free safe regenerable space."

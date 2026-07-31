@@ -26,7 +26,6 @@ CI repair, parallel worktrees, and maintainer orchestration.
 - `git-finish`: verify, stage, commit, push, and hand off finished implementation work.
 - `worktree-agents`: isolate parallel agent work with git worktrees.
 - `humanizer`: rewrite prose to remove AI writing tells while preserving meaning.
-- `free-disk-space`: audit and reclaim macOS disk space from regenerable caches and stale worktrees.
 
 Imported or source-inspired skills kept here:
 
@@ -41,7 +40,6 @@ Imported or source-inspired skills kept here:
 - `teach`
 - `readout`
 - `humanizer`
-- `free-disk-space`
 
 `code-review` includes the independent read-only subagent review policy. Editing
 subagents belong in isolated worktrees via `worktree-agents`.
@@ -108,7 +106,7 @@ Defaults:
 ## Slash Commands
 
 The `.claude/commands` wrappers are intentionally tiny. They route common
-commands such as `/manager`, `/grill-me`, `/implement`, `/debug`, `/teach`, `/readout`, `/humanizer`, `/free-disk-space`, `/babysit`, and `/create-pr` to
+commands such as `/manager`, `/grill-me`, `/implement`, `/debug`, `/teach`, `/readout`, `/humanizer`, `/babysit`, and `/create-pr` to
 the skills above instead of duplicating instructions.
 
 ## Maintenance Rules

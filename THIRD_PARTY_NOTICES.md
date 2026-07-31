@@ -22,7 +22,6 @@ updated whenever a sourced skill is added, renamed, or materially rewritten.
 | `resolve-conflicts` | Independently authored adaptation of the intent-based conflict-resolution workflow | https://github.com/mattpocock/skills/tree/main/skills/engineering/resolving-merge-conflicts | MIT |
 | `readout` | Adapted workflow, document template, and source-pane concept | https://github.com/warpdotdev/common-skills/tree/main/.agents/skills/readout | MIT; see `.agents/skills/readout/LICENSE.txt` |
 | `humanizer` | Adapted AI-writing cleanup skill and pattern catalog | https://github.com/blader/humanizer | MIT; see `.agents/skills/humanizer/LICENSE.txt` |
-| `free-disk-space` | Adapted macOS disk reclaim workflow with local extra-target notes | https://github.com/bholmesdev/skills/tree/main/skills/free-disk-space | No license declared upstream |
 
 ## Upstream Repositories Consulted
 
@@ -35,7 +34,6 @@ updated whenever a sourced skill is added, renamed, or materially rewritten.
 - Matt Pocock engineering and productivity skills: https://github.com/mattpocock/skills
 - Warp common skills: https://github.com/warpdotdev/common-skills
 - blader humanizer: https://github.com/blader/humanizer
-- Ben Holmes skills: https://github.com/bholmesdev/skills
 
 ## Repo License
 
