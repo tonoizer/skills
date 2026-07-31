@@ -80,6 +80,7 @@ legacy_removed_skill_names() {
 agent-loop
 agent-workflow
 bug-repro
+free-disk-space
 git-iteration-hygiene
 github-deep-review
 github-project-triage
