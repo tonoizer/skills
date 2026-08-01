@@ -10,18 +10,20 @@ user asks for a single-repo task in this same checkout.
 
 ## Control Plane
 
-- Keep a bounded set of visible issue/repository lanes. Own the portfolio state,
-  queue choice, lane health, and refill; do not let visible work grow without a
-  bound.
-- Give each visible issue or PR one owner. Make that owner a mini-orchestrator
-  for exactly that issue/PR, not a second portfolio manager.
+- Keep a bounded set of visible issue/repository lanes. Set the cap from the
+  available attention and tools; count each active lane once, even when it has
+  both an issue and a PR. Own the portfolio state, queue choice, lane health,
+  and refill; do not let visible work grow without a bound.
+- Give each issue/PR pair one canonical lane and one owner. Make that owner a
+  mini-orchestrator for exactly that lane, not a second portfolio manager.
 - Read active task, worker, and worktree state before steering, renaming,
   replacing, or archiving anything. Do not interrupt coherent work because
   another lane is waiting.
 - Preserve dirty or non-default local checkouts before assigning new work.
-- Refill a lane only after its issue reaches a terminal state, is explicitly
-  paused, or is blocked with a clear owner decision. Reconcile state before
-  taking the next queue item.
+- Refill a lane only after its issue reaches a terminal state (merged, closed,
+  abandoned, rejected, superseded, or explicitly paused), or is blocked with a
+  clear owner decision. Release the lane with its final proof, then reconcile
+  state before taking the next queue item.
 
 ## Issue/PR Owner Loop
 
@@ -31,8 +33,10 @@ For each visible issue/PR, have its owner:
    repository instructions.
 2. Plan the bounded change and prove dependency or ordering assumptions before
    implementation.
-3. Hand implementation to a focused child, then own the PR, independent review,
-   CI, conflict resolution, merge, and final report.
+3. Hand implementation to a focused child when delegation helps; execute the
+   bounded work directly when it is simpler or delegation is unavailable. Own
+   the PR, independent review, CI, conflict resolution, merge, and final
+   report either way.
 4. Allow one fix pass by default after review. Escalate extra scope, repeated
    failure, or owner decisions instead of looping without a bound.
 5. Merge only when authorization, review, exact-head proof, and required checks
