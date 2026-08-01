@@ -5,16 +5,53 @@ description: Multi-repo or multi-worker maintainer orchestration across reposito
 
 # Maintainer Orchestrator
 
-Coordinate work; do not become the implementation thread unless the user asks
-for a single-repo task in this same checkout.
+Coordinate the portfolio; do not become the implementation thread unless the
+user asks for a single-repo task in this same checkout.
 
 ## Control Plane
 
-- Use one worker thread or one worktree per repository when implementation is needed.
-- Keep this orchestrator focused on queue choice, state reconciliation, owner decisions, and final reporting.
-- Read active worker state before steering, renaming, replacing, or archiving any worker.
-- Never interrupt coherent active work just because another lane is waiting.
+- Keep a bounded set of visible issue/repository lanes. Own the portfolio state,
+  queue choice, lane health, and refill; do not let visible work grow without a
+  bound.
+- Give each visible issue or PR one owner. Make that owner a mini-orchestrator
+  for exactly that issue/PR, not a second portfolio manager.
+- Read active task, worker, and worktree state before steering, renaming,
+  replacing, or archiving anything. Do not interrupt coherent work because
+  another lane is waiting.
 - Preserve dirty or non-default local checkouts before assigning new work.
+- Refill a lane only after its issue reaches a terminal state, is explicitly
+  paused, or is blocked with a clear owner decision. Reconcile state before
+  taking the next queue item.
+
+## Issue/PR Owner Loop
+
+For each visible issue/PR, have its owner:
+
+1. Reconcile the issue, PR, branch/worktree, dependencies, permissions, and
+   repository instructions.
+2. Plan the bounded change and prove dependency or ordering assumptions before
+   implementation.
+3. Hand implementation to a focused child, then own the PR, independent review,
+   CI, conflict resolution, merge, and final report.
+4. Allow one fix pass by default after review. Escalate extra scope, repeated
+   failure, or owner decisions instead of looping without a bound.
+5. Merge only when authorization, review, exact-head proof, and required checks
+   allow it; otherwise return a precise handoff and keep the lane visible.
+
+Use a conflict resolver when synchronization conflicts appear. After merge or
+an explicit terminal outcome, report the proof and release the lane for refill.
+
+## Delegation Bounds
+
+- Choose a short-lived subagent for a small, well-bounded role. Choose a nested
+  task or isolated worktree for isolation, long-running CI/merge work, user
+  visibility, or durable ownership.
+- Give each child one role and a clear return point to its issue owner. Children
+  must not manage unrelated issues or spawn recursively without an explicit,
+  bounded reason.
+- Read child/task state before steering it. Keep the issue owner accountable
+  for scope, permissions, evidence, user intent, and merge even when children
+  do the work.
 
 ## Startup
 
@@ -22,7 +59,7 @@ for a single-repo task in this same checkout.
 2. List active repositories/workers if thread tools are available.
 3. For each candidate repo, inspect `git status --short --branch`, GitHub queue, CI, and repo instructions.
 4. Classify work with `issue-triage`.
-5. Assign or continue exactly one coherent next action per repository.
+5. Assign or continue exactly one coherent next action per visible issue/PR owner.
 
 ## Execution Policy
 
@@ -41,6 +78,10 @@ Every worker should receive:
 - requirement to run `code-review` when the diff is non-trivial;
 - requirement to run `ci-fix` after push/PR update when GitHub CI applies;
 - final report format: summary, files, commands, risks, next action.
+
+Keep this contract for issue owners and their children. Let explicit user
+instructions override these defaults when they set a different scope, lane
+policy, delegation boundary, or merge rule.
 
 ## Owner Decisions
 
