@@ -108,6 +108,13 @@
       "sourceUrl": "https://github.com/mattpocock/skills/tree/main/skills/productivity/grill-me",
       "license": "MIT",
       "skillPath": ".agents/skills/grill-me/SKILL.md"
+    },
+    "simplify": {
+      "source": "bholmesdev/skills",
+      "sourceType": "source-inspired",
+      "sourceUrl": "https://github.com/bholmesdev/skills/tree/main/skills/simplify",
+      "license": "Upstream license not stated",
+      "skillPath": ".agents/skills/simplify/SKILL.md"
     }
   }
 }
