@@ -26,6 +26,7 @@ CI repair, parallel worktrees, and maintainer orchestration.
 - `git-finish`: verify, stage, commit, push, and hand off finished implementation work.
 - `worktree-agents`: isolate parallel agent work with git worktrees.
 - `humanizer`: rewrite prose to remove AI writing tells while preserving meaning.
+- `simplify`: simplify ready code and comments without changing behavior.
 
 Imported or source-inspired skills kept here:
 
@@ -106,7 +107,7 @@ Defaults:
 ## Slash Commands
 
 The `.claude/commands` wrappers are intentionally tiny. They route common
-commands such as `/manager`, `/grill-me`, `/implement`, `/debug`, `/teach`, `/readout`, `/humanizer`, `/babysit`, and `/create-pr` to
+commands such as `/manager`, `/grill-me`, `/implement`, `/debug`, `/teach`, `/readout`, `/humanizer`, `/simplify`, `/babysit`, and `/create-pr` to
 the skills above instead of duplicating instructions.
 
 ## Maintenance Rules
