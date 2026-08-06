@@ -52,6 +52,67 @@ function Get-ConfiguredPath {
     return $value
 }
 
+function Get-InstallerFullPath {
+    param([string]$Path)
+
+    $pathForResolution = $Path
+    if (-not [IO.Path]::IsPathRooted($pathForResolution)) {
+        $pathForResolution = Join-Path (Get-Location).Path $pathForResolution
+    }
+    return [IO.Path]::GetFullPath($pathForResolution)
+}
+
+function Assert-SafeTargetRoot {
+    param(
+        [string]$Name,
+        [string]$Path
+    )
+
+    try {
+        $fullPath = Get-InstallerFullPath -Path $Path
+        $root = [IO.Path]::GetPathRoot($fullPath)
+        if ([string]::IsNullOrEmpty($root)) {
+            throw 'The path has no recognizable filesystem root.'
+        }
+
+        $current = $root
+        $rootItem = Get-Item -LiteralPath $current -Force -ErrorAction SilentlyContinue
+        if ($null -ne $rootItem -and (($rootItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0)) {
+            throw ('path component ''{0}'' is a reparse point' -f $current)
+        }
+
+        $relativePath = $fullPath.Substring($root.Length).Trim([char[]]@('\', '/'))
+        if (-not [string]::IsNullOrEmpty($relativePath)) {
+            foreach ($component in ($relativePath -split '[\\/]')) {
+                if ([string]::IsNullOrEmpty($component)) {
+                    continue
+                }
+                $current = Join-Path $current $component
+                $item = Get-Item -LiteralPath $current -Force -ErrorAction SilentlyContinue
+                if ($null -ne $item -and (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0)) {
+                    throw ('path component ''{0}'' is a reparse point' -f $current)
+                }
+            }
+        }
+    } catch {
+        throw ('Configured {0} path ''{1}'' is unsafe or invalid: {2}' -f $Name, $Path, $_.Exception.Message)
+    }
+}
+
+function Assert-ConfiguredTargets {
+    if ($script:InstallSkills) {
+        if ($script:InstallAgent) {
+            Assert-SafeTargetRoot -Name 'AGENT_SKILLS_HOME' -Path $script:AgentSkillsHome
+        }
+        if ($script:InstallClaude) {
+            Assert-SafeTargetRoot -Name 'CLAUDE_SKILLS_HOME' -Path $script:ClaudeSkillsHome
+        }
+    }
+    if ($script:InstallCommands) {
+        Assert-SafeTargetRoot -Name 'CLAUDE_COMMANDS_HOME' -Path $script:ClaudeCommandsHome
+    }
+}
+
 function Invoke-InstallerAction {
     param(
         [scriptblock]$Action,
@@ -96,6 +157,17 @@ function Remove-InstallerPath {
         -Action { Remove-Item -Recurse -Force -LiteralPath $Path -ErrorAction SilentlyContinue }
 }
 
+function Remove-ReparseManifest {
+    param([string]$Path)
+
+    $manifestItem = Get-Item -LiteralPath $Path -Force -ErrorAction SilentlyContinue
+    if ($null -ne $manifestItem -and (($manifestItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0)) {
+        Remove-InstallerPath -Path $Path
+        return $true
+    }
+    return $false
+}
+
 function Copy-InstallerFile {
     param(
         [string]$Source,
@@ -105,6 +177,10 @@ function Copy-InstallerFile {
     $destinationItem = Get-Item -LiteralPath $Destination -Force -ErrorAction SilentlyContinue
     if ($null -ne $destinationItem -and (($destinationItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0)) {
         Remove-InstallerPath -Path $Destination
+        $destinationItem = $null
+    }
+    if ($null -ne $destinationItem -and $destinationItem.PSIsContainer) {
+        throw ("Cannot copy installer file '{0}' to '{1}': the destination is an existing directory." -f $Source, $Destination)
     }
 
     Invoke-InstallerAction `
@@ -193,6 +269,7 @@ function Write-SkillManifest {
     param([string]$Target)
 
     $manifest = Join-Path $Target '.agent-workflow-pack.manifest'
+    Remove-ReparseManifest -Path $manifest | Out-Null
     if ($script:DryRun) {
         Write-Output ('+ write ' + $manifest)
     } else {
@@ -250,7 +327,8 @@ function Remove-PrunedSkills {
 
     $manifest = Join-Path $Target '.agent-workflow-pack.manifest'
     $names = @()
-    if (Test-Path -LiteralPath $manifest -PathType Leaf) {
+    $manifestWasReplaced = Remove-ReparseManifest -Path $manifest
+    if (-not $manifestWasReplaced -and (Test-Path -LiteralPath $manifest -PathType Leaf)) {
         $names += @(Get-Content -LiteralPath $manifest)
     }
     $names += Get-LegacyRemovedSkillNames
@@ -349,6 +427,8 @@ if (-not (Test-Path -LiteralPath $script:SourceSkills -PathType Container)) {
     [Console]::Error.WriteLine('Missing source skills directory: {0}' -f $script:SourceSkills)
     exit 1
 }
+
+Assert-ConfiguredTargets
 
 if ($script:InstallSkills) {
     if ($script:InstallAgent) {
