@@ -88,14 +88,32 @@ tools, not required stages in the engineering loop.
 
 Install or update this pack into user-wide supported-agent locations:
 
+On macOS/Linux, use Bash:
+
 ```bash
 scripts/install.sh
 ```
 
-Preview changes first:
+On Windows, use native PowerShell:
+
+```powershell
+.\scripts\install.ps1
+```
+
+If script execution is restricted, run it for this invocation with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1
+```
+
+Preview changes first with either installer:
 
 ```bash
 scripts/install.sh --dry-run
+```
+
+```powershell
+.\scripts\install.ps1 --dry-run
 ```
 
 Defaults:
@@ -103,6 +121,19 @@ Defaults:
 - skills sync to `$HOME/.agents/skills` and `$HOME/.claude/skills`;
 - slash wrappers sync to `$HOME/.claude/commands`;
 - only skills previously installed by this pack are pruned when removed here.
+
+Both installers support `--dry-run`, `--skills-only`, `--commands-only`,
+`--codex-only`, `--claude-only`, `--no-prune`, and `-h`/`--help`.
+Override the destinations with `AGENT_SKILLS_HOME`, `CLAUDE_SKILLS_HOME`, and
+`CLAUDE_COMMANDS_HOME`. In PowerShell, set them for the current session, for
+example:
+
+```powershell
+$env:AGENT_SKILLS_HOME = Join-Path $env:TEMP 'agent-skills'
+$env:CLAUDE_SKILLS_HOME = Join-Path $env:TEMP 'claude-skills'
+$env:CLAUDE_COMMANDS_HOME = Join-Path $env:TEMP 'claude-commands'
+.\scripts\install.ps1 --dry-run
+```
 
 ## Slash Commands
 
