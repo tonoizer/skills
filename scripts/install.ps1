@@ -93,7 +93,7 @@ function Copy-InstallerFile {
 }
 
 function Get-SkillNames {
-    return @(Get-ChildItem -LiteralPath $script:SourceSkills -Directory | Sort-Object -Property Name | ForEach-Object { $_.Name })
+    return @(Get-ChildItem -LiteralPath $script:SourceSkills -Directory -Force | Sort-Object -Property Name | ForEach-Object { $_.Name })
 }
 
 function Get-LegacyRemovedSkillNames {
@@ -167,6 +167,45 @@ function Write-SkillManifest {
     }
 }
 
+function Get-SafeChildPath {
+    param(
+        [string]$Target,
+        [string]$Name
+    )
+
+    if ([string]::IsNullOrEmpty($Name) -or $Name -ne $Name.Trim()) {
+        return $null
+    }
+    if ($Name -eq '.' -or $Name -eq '..' -or [IO.Path]::IsPathRooted($Name)) {
+        return $null
+    }
+    if ($Name.IndexOfAny([char[]]@('\', '/')) -ge 0) {
+        return $null
+    }
+    if ($Name.IndexOfAny([IO.Path]::GetInvalidFileNameChars()) -ge 0) {
+        return $null
+    }
+
+    if (Test-Path -LiteralPath $Target) {
+        $resolvedTarget = (Resolve-Path -LiteralPath $Target -ErrorAction Stop).Path
+    } else {
+        $resolvedTarget = [IO.Path]::GetFullPath($Target)
+    }
+    $candidate = [IO.Path]::GetFullPath((Join-Path $resolvedTarget $Name))
+    $resolvedCandidate = Resolve-Path -LiteralPath $candidate -ErrorAction SilentlyContinue
+    if ($null -ne $resolvedCandidate) {
+        $candidate = $resolvedCandidate.Path
+    }
+
+    $targetRoot = $resolvedTarget.TrimEnd([char[]]@('\', '/'))
+    $targetPrefix = $targetRoot + [IO.Path]::DirectorySeparatorChar
+    if (-not $candidate.StartsWith($targetPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+        return $null
+    }
+
+    return $candidate
+}
+
 function Remove-PrunedSkills {
     param([string]$Target)
 
@@ -182,13 +221,14 @@ function Remove-PrunedSkills {
     $names += Get-LegacyRemovedSkillNames
 
     foreach ($oldName in ($names | Sort-Object -Unique)) {
-        if ([string]::IsNullOrEmpty($oldName)) {
+        $safeTargetPath = Get-SafeChildPath -Target $Target -Name $oldName
+        if ($null -eq $safeTargetPath) {
             continue
         }
         if (Test-Path -LiteralPath (Join-Path $script:SourceSkills $oldName) -PathType Container) {
             continue
         }
-        Remove-InstallerPath -Path (Join-Path $Target $oldName)
+        Remove-InstallerPath -Path $safeTargetPath
     }
 }
 
@@ -217,7 +257,7 @@ function Install-ClaudeCommandsTo {
 
     Write-Output ('Installing Claude slash commands to ' + $Target)
     Ensure-Directory -Path $Target
-    $commandFiles = @(Get-ChildItem -LiteralPath $script:SourceCommands -File -Filter '*.md' | Sort-Object -Property Name)
+    $commandFiles = @(Get-ChildItem -LiteralPath $script:SourceCommands -File -Filter '*.md' -Force | Sort-Object -Property Name)
     foreach ($commandFile in $commandFiles) {
         Copy-InstallerFile -Source $commandFile.FullName -Destination (Join-Path $Target $commandFile.Name)
     }
