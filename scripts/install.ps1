@@ -76,6 +76,21 @@ function Ensure-Directory {
 function Remove-InstallerPath {
     param([string]$Path)
 
+    $item = Get-Item -LiteralPath $Path -Force -ErrorAction SilentlyContinue
+    $isReparsePoint = $null -ne $item -and (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0)
+    if ($isReparsePoint) {
+        Invoke-InstallerAction `
+            -Preview ("Remove-Item -Force -LiteralPath '{0}'" -f $Path) `
+            -Action {
+                if ($item.PSIsContainer) {
+                    [System.IO.Directory]::Delete($Path, $false)
+                } else {
+                    [System.IO.File]::Delete($Path)
+                }
+            }
+        return
+    }
+
     Invoke-InstallerAction `
         -Preview ("Remove-Item -Recurse -Force -LiteralPath '{0}'" -f $Path) `
         -Action { Remove-Item -Recurse -Force -LiteralPath $Path -ErrorAction SilentlyContinue }
@@ -86,6 +101,11 @@ function Copy-InstallerFile {
         [string]$Source,
         [string]$Destination
     )
+
+    $destinationItem = Get-Item -LiteralPath $Destination -Force -ErrorAction SilentlyContinue
+    if ($null -ne $destinationItem -and (($destinationItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0)) {
+        Remove-InstallerPath -Path $Destination
+    }
 
     Invoke-InstallerAction `
         -Preview ("Copy-Item -Force -LiteralPath '{0}' -Destination '{1}'" -f $Source, $Destination) `
@@ -120,16 +140,18 @@ function Get-LegacyRemovedSkillNames {
 function Sync-DirectoryContents {
     param(
         [string]$Source,
-        [string]$Target
+        [string]$Target,
+        [switch]$TargetWasReplaced
     )
 
     $sourceChildren = @(Get-ChildItem -LiteralPath $Source -Force)
-    if (Test-Path -LiteralPath $Target -PathType Container) {
+    if (-not $TargetWasReplaced -and (Test-Path -LiteralPath $Target -PathType Container)) {
         $targetChildren = @(Get-ChildItem -LiteralPath $Target -Force)
         foreach ($targetChild in $targetChildren) {
             $sourceChildPath = Join-Path $Source $targetChild.Name
             $sourceChild = Get-Item -LiteralPath $sourceChildPath -Force -ErrorAction SilentlyContinue
-            if ($null -eq $sourceChild -or $sourceChild.PSIsContainer -ne $targetChild.PSIsContainer) {
+            $targetIsReparsePoint = ($targetChild.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0
+            if ($targetIsReparsePoint -or $null -eq $sourceChild -or $sourceChild.PSIsContainer -ne $targetChild.PSIsContainer) {
                 Remove-InstallerPath -Path $targetChild.FullName
             }
         }
@@ -137,14 +159,27 @@ function Sync-DirectoryContents {
 
     foreach ($sourceChild in $sourceChildren) {
         $destination = Join-Path $Target $sourceChild.Name
-        $destinationItem = Get-Item -LiteralPath $destination -Force -ErrorAction SilentlyContinue
+        $destinationItem = $null
+        if (-not $TargetWasReplaced) {
+            $destinationItem = Get-Item -LiteralPath $destination -Force -ErrorAction SilentlyContinue
+        }
+        $destinationWasReplaced = $false
+        if ($null -ne $destinationItem -and (($destinationItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0)) {
+            Remove-InstallerPath -Path $destination
+            $destinationItem = $null
+            $destinationWasReplaced = $true
+        }
 
         if ($sourceChild.PSIsContainer) {
             if ($null -ne $destinationItem -and -not $destinationItem.PSIsContainer) {
                 Remove-InstallerPath -Path $destination
+                $destinationWasReplaced = $true
             }
             Ensure-Directory -Path $destination
-            Sync-DirectoryContents -Source $sourceChild.FullName -Target $destination
+            Sync-DirectoryContents `
+                -Source $sourceChild.FullName `
+                -Target $destination `
+                -TargetWasReplaced:($TargetWasReplaced -or $destinationWasReplaced)
         } else {
             if ($null -ne $destinationItem -and $destinationItem.PSIsContainer) {
                 Remove-InstallerPath -Path $destination
@@ -241,8 +276,17 @@ function Install-SkillsTo {
 
     foreach ($name in Get-SkillNames) {
         $skillTarget = Join-Path $Target $name
+        $skillTargetItem = Get-Item -LiteralPath $skillTarget -Force -ErrorAction SilentlyContinue
+        $skillTargetWasReplaced = $false
+        if ($null -ne $skillTargetItem -and (($skillTargetItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0)) {
+            Remove-InstallerPath -Path $skillTarget
+            $skillTargetWasReplaced = $true
+        }
         Ensure-Directory -Path $skillTarget
-        Sync-DirectoryContents -Source (Join-Path $script:SourceSkills $name) -Target $skillTarget
+        Sync-DirectoryContents `
+            -Source (Join-Path $script:SourceSkills $name) `
+            -Target $skillTarget `
+            -TargetWasReplaced:$skillTargetWasReplaced
     }
 
     Write-SkillManifest -Target $Target
