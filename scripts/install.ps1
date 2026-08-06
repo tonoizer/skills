@@ -1,0 +1,282 @@
+#requires -Version 5.1
+
+$ErrorActionPreference = 'Stop'
+
+function Show-Usage {
+    @'
+Install or update this repo's agent workflow skills for the current user.
+
+Usage:
+  scripts/install.ps1 [options]
+
+Options:
+  --dry-run          Show what would change.
+  --skills-only      Install only skills, not Claude slash commands.
+  --commands-only    Install only Claude slash commands.
+  --codex-only       Install skills only to AGENT_SKILLS_HOME.
+  --claude-only      Install skills only to CLAUDE_SKILLS_HOME and Claude commands.
+  --no-prune         Do not remove previously managed skills missing from this repo.
+  -h, --help         Show this help.
+
+Environment:
+  AGENT_SKILLS_HOME      Default: $HOME/.agents/skills
+  CLAUDE_SKILLS_HOME     Default: $HOME/.claude/skills
+  CLAUDE_COMMANDS_HOME   Default: $HOME/.claude/commands
+
+The script writes a .agent-workflow-pack.manifest file in each target skills
+directory so future runs can prune only skills previously installed by this pack.
+'@
+}
+
+function Get-UserHome {
+    $userHomePath = [Environment]::GetEnvironmentVariable('HOME')
+    if ([string]::IsNullOrEmpty($userHomePath)) {
+        $userHomePath = [Environment]::GetEnvironmentVariable('USERPROFILE')
+    }
+    if ([string]::IsNullOrEmpty($userHomePath)) {
+        $userHomePath = [Environment]::GetFolderPath('UserProfile')
+    }
+    return $userHomePath
+}
+
+function Get-ConfiguredPath {
+    param(
+        [string]$Name,
+        [string]$Default
+    )
+
+    $value = [Environment]::GetEnvironmentVariable($Name)
+    if ([string]::IsNullOrEmpty($value)) {
+        return $Default
+    }
+    return $value
+}
+
+function Invoke-InstallerAction {
+    param(
+        [scriptblock]$Action,
+        [string]$Preview
+    )
+
+    if ($script:DryRun) {
+        Write-Output ('+ ' + $Preview)
+    } else {
+        & $Action
+    }
+}
+
+function Ensure-Directory {
+    param([string]$Path)
+
+    Invoke-InstallerAction `
+        -Preview ("New-Item -ItemType Directory -Force -Path '{0}'" -f $Path) `
+        -Action { New-Item -ItemType Directory -Force -Path $Path | Out-Null }
+}
+
+function Remove-InstallerPath {
+    param([string]$Path)
+
+    Invoke-InstallerAction `
+        -Preview ("Remove-Item -Recurse -Force -LiteralPath '{0}'" -f $Path) `
+        -Action { Remove-Item -Recurse -Force -LiteralPath $Path -ErrorAction SilentlyContinue }
+}
+
+function Copy-InstallerFile {
+    param(
+        [string]$Source,
+        [string]$Destination
+    )
+
+    Invoke-InstallerAction `
+        -Preview ("Copy-Item -Force -LiteralPath '{0}' -Destination '{1}'" -f $Source, $Destination) `
+        -Action { Copy-Item -Force -LiteralPath $Source -Destination $Destination }
+}
+
+function Get-SkillNames {
+    return @(Get-ChildItem -LiteralPath $script:SourceSkills -Directory | Sort-Object -Property Name | ForEach-Object { $_.Name })
+}
+
+function Get-LegacyRemovedSkillNames {
+    return @(
+        'agent-loop'
+        'agent-workflow'
+        'bug-repro'
+        'free-disk-space'
+        'git-iteration-hygiene'
+        'github-deep-review'
+        'github-project-triage'
+        'issue-triage-loop'
+        'monitor-ci-and-fix'
+        'project-triage'
+        'skill-cleaner'
+        'small-fix'
+        'subagent-review'
+        'subagent-review-loop'
+        'triage-issue'
+        'worktree-parallel-agents'
+    )
+}
+
+function Sync-DirectoryContents {
+    param(
+        [string]$Source,
+        [string]$Target
+    )
+
+    $sourceChildren = @(Get-ChildItem -LiteralPath $Source -Force)
+    if (Test-Path -LiteralPath $Target -PathType Container) {
+        $targetChildren = @(Get-ChildItem -LiteralPath $Target -Force)
+        foreach ($targetChild in $targetChildren) {
+            $sourceChildPath = Join-Path $Source $targetChild.Name
+            $sourceChild = Get-Item -LiteralPath $sourceChildPath -Force -ErrorAction SilentlyContinue
+            if ($null -eq $sourceChild -or $sourceChild.PSIsContainer -ne $targetChild.PSIsContainer) {
+                Remove-InstallerPath -Path $targetChild.FullName
+            }
+        }
+    }
+
+    foreach ($sourceChild in $sourceChildren) {
+        $destination = Join-Path $Target $sourceChild.Name
+        $destinationItem = Get-Item -LiteralPath $destination -Force -ErrorAction SilentlyContinue
+
+        if ($sourceChild.PSIsContainer) {
+            if ($null -ne $destinationItem -and -not $destinationItem.PSIsContainer) {
+                Remove-InstallerPath -Path $destination
+            }
+            Ensure-Directory -Path $destination
+            Sync-DirectoryContents -Source $sourceChild.FullName -Target $destination
+        } else {
+            if ($null -ne $destinationItem -and $destinationItem.PSIsContainer) {
+                Remove-InstallerPath -Path $destination
+            }
+            Copy-InstallerFile -Source $sourceChild.FullName -Destination $destination
+        }
+    }
+}
+
+function Write-SkillManifest {
+    param([string]$Target)
+
+    $manifest = Join-Path $Target '.agent-workflow-pack.manifest'
+    if ($script:DryRun) {
+        Write-Output ('+ write ' + $manifest)
+    } else {
+        $names = @(Get-SkillNames)
+        $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+        [System.IO.File]::WriteAllLines($manifest, [string[]]$names, $utf8NoBom)
+    }
+}
+
+function Remove-PrunedSkills {
+    param([string]$Target)
+
+    if (-not $script:Prune) {
+        return
+    }
+
+    $manifest = Join-Path $Target '.agent-workflow-pack.manifest'
+    $names = @()
+    if (Test-Path -LiteralPath $manifest -PathType Leaf) {
+        $names += @(Get-Content -LiteralPath $manifest)
+    }
+    $names += Get-LegacyRemovedSkillNames
+
+    foreach ($oldName in ($names | Sort-Object -Unique)) {
+        if ([string]::IsNullOrEmpty($oldName)) {
+            continue
+        }
+        if (Test-Path -LiteralPath (Join-Path $script:SourceSkills $oldName) -PathType Container) {
+            continue
+        }
+        Remove-InstallerPath -Path (Join-Path $Target $oldName)
+    }
+}
+
+function Install-SkillsTo {
+    param([string]$Target)
+
+    Write-Output ('Installing skills to ' + $Target)
+    Ensure-Directory -Path $Target
+    Remove-PrunedSkills -Target $Target
+
+    foreach ($name in Get-SkillNames) {
+        $skillTarget = Join-Path $Target $name
+        Ensure-Directory -Path $skillTarget
+        Sync-DirectoryContents -Source (Join-Path $script:SourceSkills $name) -Target $skillTarget
+    }
+
+    Write-SkillManifest -Target $Target
+}
+
+function Install-ClaudeCommandsTo {
+    param([string]$Target)
+
+    if (-not (Test-Path -LiteralPath $script:SourceCommands -PathType Container)) {
+        return
+    }
+
+    Write-Output ('Installing Claude slash commands to ' + $Target)
+    Ensure-Directory -Path $Target
+    $commandFiles = @(Get-ChildItem -LiteralPath $script:SourceCommands -File -Filter '*.md' | Sort-Object -Property Name)
+    foreach ($commandFile in $commandFiles) {
+        Copy-InstallerFile -Source $commandFile.FullName -Destination (Join-Path $Target $commandFile.Name)
+    }
+}
+
+$script:DryRun = $false
+$script:InstallSkills = $true
+$script:InstallCommands = $true
+$script:InstallAgent = $true
+$script:InstallClaude = $true
+$script:Prune = $true
+
+foreach ($option in @($args)) {
+    switch ($option) {
+        '--dry-run' { $script:DryRun = $true }
+        '--skills-only' { $script:InstallCommands = $false }
+        '--commands-only' { $script:InstallSkills = $false }
+        '--codex-only' {
+            $script:InstallClaude = $false
+            $script:InstallCommands = $false
+        }
+        '--claude-only' { $script:InstallAgent = $false }
+        '--no-prune' { $script:Prune = $false }
+        '-h' { Show-Usage; exit 0 }
+        '--help' { Show-Usage; exit 0 }
+        default {
+            [Console]::Error.WriteLine('Unknown option: {0}' -f $option)
+            Show-Usage
+            exit 2
+        }
+    }
+}
+
+$scriptPath = $MyInvocation.MyCommand.Path
+$script:RepoRoot = (Resolve-Path (Join-Path (Split-Path -Parent $scriptPath) '..')).Path
+$script:SourceSkills = Join-Path $script:RepoRoot '.agents\skills'
+$script:SourceCommands = Join-Path $script:RepoRoot '.claude\commands'
+
+$userHome = Get-UserHome
+$script:AgentSkillsHome = Get-ConfiguredPath -Name 'AGENT_SKILLS_HOME' -Default (Join-Path $userHome '.agents\skills')
+$script:ClaudeSkillsHome = Get-ConfiguredPath -Name 'CLAUDE_SKILLS_HOME' -Default (Join-Path $userHome '.claude\skills')
+$script:ClaudeCommandsHome = Get-ConfiguredPath -Name 'CLAUDE_COMMANDS_HOME' -Default (Join-Path $userHome '.claude\commands')
+
+if (-not (Test-Path -LiteralPath $script:SourceSkills -PathType Container)) {
+    [Console]::Error.WriteLine('Missing source skills directory: {0}' -f $script:SourceSkills)
+    exit 1
+}
+
+if ($script:InstallSkills) {
+    if ($script:InstallAgent) {
+        Install-SkillsTo -Target $script:AgentSkillsHome
+    }
+    if ($script:InstallClaude) {
+        Install-SkillsTo -Target $script:ClaudeSkillsHome
+    }
+}
+
+if ($script:InstallCommands) {
+    Install-ClaudeCommandsTo -Target $script:ClaudeCommandsHome
+}
+
+Write-Output 'Done.'
