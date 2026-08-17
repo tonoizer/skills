@@ -13,7 +13,7 @@ Before editing, identify the requested outcome, source of truth, non-goals, affe
 
 ## Workflow
 
-1. Read repository instructions, the request/specification/issue, relevant architecture, and nearby tests.
+1. Read repository instructions, the request/specification/issue, relevant architecture, and nearby tests. Use `repo-guardrails` to lock allowed paths and non-goals before editing.
 2. Inspect the worktree and use a dedicated conventional branch or isolated worktree when the task owns Git state.
 3. Map the smallest vertical slices that each produce observable progress.
 4. For each slice, add or update a behavior-focused test first when feasible, make the minimum implementation pass, and run the focused check.

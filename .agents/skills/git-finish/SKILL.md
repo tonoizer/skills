@@ -11,7 +11,7 @@ Use after each meaningful implementation slice.
 
 1. `git status --short --branch`
 2. Review `git diff` and ensure scope is intentional.
-3. Run relevant verification from `AGENTS.md`.
+3. Run relevant verification from `AGENTS.md`. Apply `repo-guardrails`: reject unrelated files, require atomic conventional commits, and stop on secrets or conflict markers.
 4. Stage explicit paths only; avoid `git add .` unless every change is intended.
 5. Commit with a concise message when requested or needed for PR work.
 6. Push when the task involves GitHub, PRs, CI, or the user asked to publish.

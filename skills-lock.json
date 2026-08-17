@@ -90,6 +90,11 @@
       "sourceType": "local",
       "skillPath": ".agents/skills/git-finish/SKILL.md"
     },
+    "repo-guardrails": {
+      "source": "local",
+      "sourceType": "local",
+      "skillPath": ".agents/skills/repo-guardrails/SKILL.md"
+    },
     "worktree-agents": {
       "source": "local",
       "sourceType": "local",

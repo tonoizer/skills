@@ -24,6 +24,7 @@ CI repair, parallel worktrees, and maintainer orchestration.
 - `manager`: turn a settled feature plan into a built, reviewed, and repaired change through fresh native agent sessions.
 - `loop`: own one item from request or queue selection to its authorized terminal state.
 - `git-finish`: verify, stage, commit, push, and hand off finished implementation work.
+- `repo-guardrails`: enforce AGENTS.md policy with scoped edits, verification, and atomic commits; `/safe-change` and `/atomic-commits` are aliases.
 - `worktree-agents`: isolate parallel agent work with git worktrees.
 - `humanizer`: rewrite prose to remove AI writing tells while preserving meaning.
 - `simplify`: simplify ready code and comments without changing behavior.
@@ -52,14 +53,20 @@ their internals:
 
 ```text
 request or queue
+  -> repo-guardrails loads AGENTS.md policy and locks scope
   -> grill-me only for consequential unresolved decisions
   -> implement | debug | review-pr | resolve-conflicts
-  -> verification + code-review
-  -> git-finish + create-pr
+  -> repo-guardrails verification + code-review
+  -> git-finish (atomic commits) + create-pr
   -> babysit until merge-ready
   -> optional authorized merge
   -> clean synchronized base, then repeat
 ```
+
+`repo-guardrails` does not write the feature. It is the enforcement layer:
+read the repo's `AGENTS.md`, stay in lane, test, review the diff, and refuse
+bad commits. Each repo keeps its own commands and ownership rules in
+`AGENTS.md`; this skill only enforces them.
 
 `manager` is the session orchestrator for a settled feature. It keeps the main
 chat in charge, starts a fresh builder, then a fresh reviewer, and sends
@@ -138,8 +145,9 @@ $env:CLAUDE_COMMANDS_HOME = Join-Path $env:TEMP 'claude-commands'
 ## Slash Commands
 
 The `.claude/commands` wrappers are intentionally tiny. They route common
-commands such as `/manager`, `/grill-me`, `/implement`, `/debug`, `/teach`, `/readout`, `/humanizer`, `/simplify`, `/babysit`, and `/create-pr` to
-the skills above instead of duplicating instructions.
+commands such as `/manager`, `/grill-me`, `/implement`, `/debug`, `/teach`, `/readout`, `/humanizer`, `/simplify`, `/babysit`, `/create-pr`,
+`/repo-guardrails`, `/safe-change`, and `/atomic-commits` to the skills above
+instead of duplicating instructions.
 
 ## Maintenance Rules
 
@@ -152,5 +160,6 @@ the skills above instead of duplicating instructions.
 ```bash
 find .agents/skills -name SKILL.md -print
 bash -n .agents/skills/ci-fix/scripts/watch-gh-checks.sh
+bash -n .agents/skills/repo-guardrails/scripts/check-change-scope.sh
 bash -n scripts/install.sh
 ```
