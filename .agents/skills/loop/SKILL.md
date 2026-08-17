@@ -13,7 +13,7 @@ Infer the target and terminal outcome from the request: verified diff, pushed br
 
 ## Engine
 
-1. Read repository instructions and inspect the worktree before changing Git state. If a merge, rebase, cherry-pick, or revert is already conflicted, preserve it and use `resolve-conflicts` before any synchronization, checkout, or branch creation.
+1. Read repository instructions and inspect the worktree before changing Git state. Use `repo-guardrails` to load policy and lock allowed paths. If a merge, rebase, cherry-pick, or revert is already conflicted, preserve it and use `resolve-conflicts` before any synchronization, checkout, or branch creation.
 2. Select the explicit request, specification, issue, or PR. If none is named, use `issue-triage` and pick the safest autonomous item with a clear verification path.
 3. Resolve discoverable facts directly. Use `grill-me` only when an unresolved owner decision materially changes scope, behavior, or risk.
 4. Preserve all unrelated work. Never use reset, clean, forced checkout, or broad restoration as loop cleanup. If the current base is dirty, use an isolated worktree or stop when isolation cannot preserve the user's state safely.
