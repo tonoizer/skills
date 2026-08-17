@@ -5,36 +5,20 @@ description: Enforce repository policy from AGENTS.md around scoped edits, atomi
 
 # Repo Guardrails
 
-Do not write the feature. Make every coding change follow the current repo's rules.
+Do not write the feature. Enforce this repo's `AGENTS.md`. Do not hard-code
+formatter or test commands here.
 
-This skill is the enforcement layer. `AGENTS.md` (or equivalent repo instructions) is the policy. Do not hard-code language, formatter, or test commands here.
+## Gates
 
-```text
-AGENTS.md
-  -> repo-guardrails
-  -> scope check
-  -> implementation (implement | debug)
-  -> lint / typecheck / tests
-  -> diff review
-  -> safe commit
-  -> CI / merge gate
-```
-
-## Load policy
-
-Read repository instructions before editing. Prefer `AGENTS.md`, then other committed agent or contributor docs. Extract only what this repo states:
-
-- allowed paths and task scope
-- formatter, lint, typecheck, test, and CI commands
-- commit message and Git safety rules
-- regression-test, docs, and changelog requirements
-- security, breaking-change, and human-review rules
-
-If a rule is missing, use the smallest safe default from [policy-sources.md](references/policy-sources.md) and say so. Never invent a stack-specific workflow.
+1. Load policy from `AGENTS.md` first. If a rule is missing, use [policy-sources.md](references/policy-sources.md) and say so.
+2. Lock allowed paths and non-goals. Reject unrelated files, refactors, and drive-by cleanup.
+3. Hand the change to `implement` or `debug`. Keep the locked scope.
+4. Run the repo's formatter, lint, typecheck, and relevant tests. Do not skip failing checks or weaken tests to pass.
+5. Review `git diff`. For non-trivial or risky changes, use `code-review`.
+6. Require one outcome per commit and explicit paths. Then use `git-finish`. See [atomic-commits.md](references/atomic-commits.md).
+7. If publishing, use `ci-fix` or `babysit` on the exact head. Do not merge or skip required checks unless the user authorized that. Escalate breaking, security, data-loss, secret, or irreversible work per [escalation.md](references/escalation.md).
 
 ## Scope check
-
-Before editing, name the task outcome, non-goals, and allowed paths. Reject files, refactors, and drive-by cleanup outside that scope.
 
 Use the bundled checker when paths can be stated as globs:
 
@@ -43,35 +27,6 @@ Use the bundled checker when paths can be stated as globs:
 ```
 
 Stop when the diff includes unrelated work, secrets, or conflict markers. Preserve that work; do not delete it to make the task look clean.
-
-## Implementation gate
-
-Hand the actual change to `implement` or `debug`. While they work:
-
-- keep edits inside the locked scope
-- require a regression test for bug fixes when the repo can express one
-- update docs or changelog only when policy requires it
-- do not mix unrelated outcomes in one diff
-
-## Verify
-
-Run the repo's own formatter, lint, typecheck, and relevant tests. Prefer the focused check for the slice, then the broader relevant command from policy. Do not skip failing checks or weaken tests to pass.
-
-## Diff review
-
-Review `git diff` before commit. For non-trivial or risky changes, use `code-review`. Accept only in-scope, high-confidence findings and re-verify after fixes.
-
-## Safe commit
-
-Require small atomic commits: one outcome per commit, conventional messages if the repo uses them, explicit paths only. Then use `git-finish` for staging, commit, and push. Never `git add .` unless every change is intended.
-
-See [atomic-commits.md](references/atomic-commits.md).
-
-## CI and merge
-
-If publication is in scope, use `ci-fix` or `babysit` on the exact head. Do not merge, approve, or skip required checks unless the user explicitly authorized that action.
-
-Escalate breaking, security, data-loss, secret, or irreversible changes to a human. See [escalation.md](references/escalation.md).
 
 ## Output
 

@@ -7,5 +7,4 @@ Use `$repo-guardrails`.
 
 Context: $ARGUMENTS
 
-Keep one outcome per commit, stage explicit paths, and refuse unrelated files.
-Load commit and verification rules from the repo's AGENTS.md.
+Keep one outcome per commit and stage explicit paths.

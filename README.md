@@ -53,20 +53,15 @@ their internals:
 
 ```text
 request or queue
-  -> repo-guardrails loads AGENTS.md policy and locks scope
+  -> repo-guardrails
   -> grill-me only for consequential unresolved decisions
   -> implement | debug | review-pr | resolve-conflicts
-  -> repo-guardrails verification + code-review
-  -> git-finish (atomic commits) + create-pr
+  -> verification + code-review
+  -> git-finish + create-pr
   -> babysit until merge-ready
   -> optional authorized merge
   -> clean synchronized base, then repeat
 ```
-
-`repo-guardrails` does not write the feature. It is the enforcement layer:
-read the repo's `AGENTS.md`, stay in lane, test, review the diff, and refuse
-bad commits. Each repo keeps its own commands and ownership rules in
-`AGENTS.md`; this skill only enforces them.
 
 `manager` is the session orchestrator for a settled feature. It keeps the main
 chat in charge, starts a fresh builder, then a fresh reviewer, and sends

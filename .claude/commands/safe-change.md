@@ -7,5 +7,4 @@ Use `$repo-guardrails`.
 
 Context: $ARGUMENTS
 
-Read the repo's AGENTS.md, stay in the locked file scope, verify, review the
-diff, and require small atomic commits. Do not implement the feature here.
+Stay inside the locked file scope.

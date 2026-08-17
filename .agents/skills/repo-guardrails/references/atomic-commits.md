@@ -35,28 +35,5 @@ Do not write:
 - filler (`WIP`, `misc`, `address comments`, `updates`)
 - restatements of the diff (`update file X`)
 
-## Staging
-
-1. `git status --short --branch`
-2. `git diff` and `git diff --cached`
-3. Confirm every path is in the locked scope.
-4. Stage explicit paths only.
-5. Run the repo's relevant verification.
-6. Commit, then inspect `git show --stat` to confirm the commit stayed atomic.
-
-Use `git-finish` for the mechanical stage, commit, and push steps after these
-gates pass.
-
-## Checker
-
-When allowed globs are known:
-
-```bash
-.agents/skills/repo-guardrails/scripts/check-change-scope.sh \
-  --allow 'src/feature/**' \
-  --allow 'src/feature/**/__tests__/**'
-```
-
-The checker fails on paths outside the allow list, secret-like files, and
-unresolved conflict markers. It does not invent the allow list; the agent must
-pass the scope it locked from policy and the task.
+After the scope checker passes, use `git-finish` for stage, commit, and push.
+Then inspect `git show --stat` to confirm the commit stayed atomic.

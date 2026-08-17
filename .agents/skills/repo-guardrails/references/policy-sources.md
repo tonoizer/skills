@@ -39,9 +39,3 @@ defaults:
 - Add or update a regression test for bug fixes when a test harness exists.
 - Do not commit secrets, credentials, conflict markers, or generated noise.
 - Do not merge, approve, force-push, or skip required CI.
-
-## What does not belong in this skill
-
-Language-specific formatters, linters, and test runners live in the repo's
-`AGENTS.md`. Personal paths, machine-local tools, and one-off defaults belong
-in that repo's policy, not here.

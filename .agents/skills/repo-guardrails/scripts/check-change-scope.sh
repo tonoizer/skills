@@ -43,16 +43,13 @@ while [ "$#" -gt 0 ]; do
         printf 'error: --allow requires a glob\n' >&2
         exit 2
       fi
-      allow_globs+=("$glob")
+      # Bash case glob matching treats * as matching across '/'. Treat ** the same.
+      allow_globs+=("$(printf '%s\n' "$glob" | sed 's/\*\*/\*/g')")
       shift
       ;;
     -h|--help)
       usage
       exit 0
-      ;;
-    --)
-      shift
-      break
       ;;
     -*)
       printf 'error: unknown option: %s\n\n' "$1" >&2
@@ -77,26 +74,13 @@ if [ -z "$base" ] && git rev-parse --verify HEAD >/dev/null 2>&1; then
   base=HEAD
 fi
 
-# Bash case glob matching treats * as matching across '/'. Treat ** the same.
-glob_to_pattern() {
-  printf '%s\n' "$1" | sed 's/\*\*/\*/g'
-}
-
-path_matches_glob() {
-  path="$1"
-  glob="$2"
-  pattern="$(glob_to_pattern "$glob")"
-  case "$path" in
-    $pattern) return 0 ;;
-  esac
-  return 1
-}
-
 path_is_allowed() {
   path="$1"
   [ "${#allow_globs[@]}" -gt 0 ] || return 0
-  for glob in "${allow_globs[@]}"; do
-    path_matches_glob "$path" "$glob" && return 0
+  for pattern in "${allow_globs[@]}"; do
+    case "$path" in
+      $pattern) return 0 ;;
+    esac
   done
   return 1
 }
@@ -152,28 +136,23 @@ if [ "${#paths[@]}" -eq 0 ]; then
   exit 0
 fi
 
-failed=0
 secret_count=0
 conflict_count=0
 out_of_scope_count=0
 
 printf 'path\tstatus\n'
 for path in "${paths[@]}"; do
-  [ -n "$path" ] || continue
   status=ok
 
   if path_looks_secret "$path"; then
     status=secret
     secret_count=$((secret_count + 1))
-    failed=1
   elif file_has_conflict_markers "$path"; then
     status=conflict
     conflict_count=$((conflict_count + 1))
-    failed=1
   elif ! path_is_allowed "$path"; then
     status=out-of-scope
     out_of_scope_count=$((out_of_scope_count + 1))
-    failed=1
   fi
 
   printf '%s\t%s\n' "$path" "$status"
@@ -183,6 +162,6 @@ printf '\n'
 printf 'files=%s out-of-scope=%s secret=%s conflict=%s\n' \
   "${#paths[@]}" "$out_of_scope_count" "$secret_count" "$conflict_count"
 
-if [ "$failed" -ne 0 ]; then
+if [ "$secret_count" -ne 0 ] || [ "$conflict_count" -ne 0 ] || [ "$out_of_scope_count" -ne 0 ]; then
   exit 1
 fi

@@ -18,9 +18,6 @@ review, PR, CI, and maintainer loops.
 
 ## Change policy
 
-This file is the repo-specific policy. `repo-guardrails` enforces it around
-edits and commits.
-
 - Stay inside the requested skill, command, installer, or docs files.
 - Require a regression check when changing script behavior.
 - Update README slash-command and skill-map text when adding or renaming a skill.
