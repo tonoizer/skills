@@ -145,6 +145,33 @@ $env:COPILOT_SKILLS_HOME = Join-Path $env:TEMP 'copilot-skills'
 .\scripts\install.ps1 --dry-run
 ```
 
+## Agent Plugin (Agent Plugins 1.0.0)
+
+Build a portable [Agent Plugins 1.0.0](https://agent-plugins.org/) directory
+that any conformant client can load — ChatGPT, Codex, Cursor, VS Code,
+GitHub Copilot, Kiro, and others.
+
+```bash
+scripts/build-plugin.sh
+```
+
+```powershell
+.\scripts\build-plugin.ps1
+```
+
+This produces `dist/tonoizer-agent-skills/` with a `plugin.json` manifest and
+a `skills/` directory. Copy it into your client's plugin path:
+
+```bash
+cp -r dist/tonoizer-agent-skills ~/.agents/plugins/tonoizer-agent-skills
+```
+
+```powershell
+Copy-Item -Recurse dist\tonoizer-agent-skills $env:USERPROFILE\.agents\plugins\tonoizer-agent-skills
+```
+
+Preview with `--dry-run` / `-DryRun`.
+
 ## Slash Commands
 
 The `.claude/commands` wrappers are intentionally tiny. They route common
