@@ -152,26 +152,6 @@ commands such as `/manager`, `/grill-me`, `/implement`, `/debug`, `/teach`, `/re
 `/repo-guardrails`, `/safe-change`, and `/atomic-commits` to the skills above
 instead of duplicating instructions.
 
-## VS Code / Copilot Extension
-
-A local VS Code extension (`tonoizer-agent-skills`) is available under
-`vscode-extension/`. It registers all skills as Copilot `chatSkills` so they
-are discovered automatically without copying files.
-
-Build and install:
-
-```bash
-scripts/build-vsix.sh
-code --install-extension vscode-extension/tonoizer-agent-skills-0.1.0.vsix
-```
-
-```powershell
-.\scripts\build-vsix.ps1
-code --install-extension .\vscode-extension\tonoizer-agent-skills-0.1.0.vsix
-```
-
-Preview what the build does first with `--dry-run`.
-
 ## Maintenance Rules
 
 - Keep `SKILL.md` files short. Put detailed examples in `references/`.
