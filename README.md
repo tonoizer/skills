@@ -74,9 +74,11 @@ tools, not required stages in the engineering loop.
 
 - Codex, Cursor, OpenCode, and GitHub Copilot can read the canonical skills
   installed under `.agents/skills`.
-- Claude Code reads the same skills through `.claude/skills`, which points to
-  the canonical `.agents/skills` directory.
-- Keep `.agents/skills` as the source of truth so the two clients do not drift.
+- Claude Code reads the same skills through `.claude/skills`.
+- Cursor reads skills from `.cursor/skills`.
+- Codex reads skills from `.codex/skills`.
+- The installer syncs the same skill set to all four locations so every host
+  stays in sync. Keep `.agents/skills` as the source of truth.
 
 ## Source And License Notes
 
@@ -120,20 +122,24 @@ scripts/install.sh --dry-run
 
 Defaults:
 
-- skills sync to `$HOME/.agents/skills` and `$HOME/.claude/skills`;
+- skills sync to `$HOME/.agents/skills`, `$HOME/.claude/skills`,
+  `$HOME/.cursor/skills`, and `$HOME/.codex/skills`;
 - slash wrappers sync to `$HOME/.claude/commands`;
 - only skills previously installed by this pack are pruned when removed here.
 
 Both installers support `--dry-run`, `--skills-only`, `--commands-only`,
-`--codex-only`, `--claude-only`, `--no-prune`, and `-h`/`--help`.
-Override the destinations with `AGENT_SKILLS_HOME`, `CLAUDE_SKILLS_HOME`, and
-`CLAUDE_COMMANDS_HOME`. In PowerShell, set them for the current session, for
-example:
+`--codex-only`, `--claude-only`, `--cursor-only`, `--no-prune`, and
+`-h`/`--help`.
+Override the destinations with `AGENT_SKILLS_HOME`, `CLAUDE_SKILLS_HOME`,
+`CLAUDE_COMMANDS_HOME`, `CURSOR_SKILLS_HOME`, and `CODEX_SKILLS_HOME`.
+In PowerShell, set them for the current session, for example:
 
 ```powershell
 $env:AGENT_SKILLS_HOME = Join-Path $env:TEMP 'agent-skills'
 $env:CLAUDE_SKILLS_HOME = Join-Path $env:TEMP 'claude-skills'
 $env:CLAUDE_COMMANDS_HOME = Join-Path $env:TEMP 'claude-commands'
+$env:CURSOR_SKILLS_HOME = Join-Path $env:TEMP 'cursor-skills'
+$env:CODEX_SKILLS_HOME = Join-Path $env:TEMP 'codex-skills'
 .\scripts\install.ps1 --dry-run
 ```
 
