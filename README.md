@@ -72,12 +72,12 @@ tools, not required stages in the engineering loop.
 
 ## Supported Agent Hosts
 
-- Codex, Cursor, OpenCode, and GitHub Copilot can read the canonical skills
-  installed under `.agents/skills`.
-- Claude Code reads the same skills through `.claude/skills`.
-- Cursor reads skills from `.cursor/skills`.
-- Codex reads skills from `.codex/skills`.
-- The installer syncs the same skill set to all four locations so every host
+- **Generic** (OpenCode, etc.) read skills from `~/.agents/skills`.
+- **Claude Code** reads skills from `~/.claude/skills`.
+- **Cursor** reads skills from `~/.cursor/skills`.
+- **Codex** reads skills from `~/.codex/skills`.
+- **GitHub Copilot / VS Code** reads skills from `~/.copilot/skills`.
+- The installer syncs the same skill set to all five locations so every host
   stays in sync. Keep `.agents/skills` as the source of truth.
 
 ## Source And License Notes
@@ -123,15 +123,16 @@ scripts/install.sh --dry-run
 Defaults:
 
 - skills sync to `$HOME/.agents/skills`, `$HOME/.claude/skills`,
-  `$HOME/.cursor/skills`, and `$HOME/.codex/skills`;
+  `$HOME/.cursor/skills`, `$HOME/.codex/skills`, and `$HOME/.copilot/skills`;
 - slash wrappers sync to `$HOME/.claude/commands`;
 - only skills previously installed by this pack are pruned when removed here.
 
 Both installers support `--dry-run`, `--skills-only`, `--commands-only`,
-`--codex-only`, `--claude-only`, `--cursor-only`, `--no-prune`, and
-`-h`/`--help`.
+`--codex-only`, `--claude-only`, `--cursor-only`, `--copilot-only`,
+`--no-prune`, and `-h`/`--help`.
 Override the destinations with `AGENT_SKILLS_HOME`, `CLAUDE_SKILLS_HOME`,
-`CLAUDE_COMMANDS_HOME`, `CURSOR_SKILLS_HOME`, and `CODEX_SKILLS_HOME`.
+`CLAUDE_COMMANDS_HOME`, `CURSOR_SKILLS_HOME`, `CODEX_SKILLS_HOME`, and
+`COPILOT_SKILLS_HOME`.
 In PowerShell, set them for the current session, for example:
 
 ```powershell
@@ -140,6 +141,7 @@ $env:CLAUDE_SKILLS_HOME = Join-Path $env:TEMP 'claude-skills'
 $env:CLAUDE_COMMANDS_HOME = Join-Path $env:TEMP 'claude-commands'
 $env:CURSOR_SKILLS_HOME = Join-Path $env:TEMP 'cursor-skills'
 $env:CODEX_SKILLS_HOME = Join-Path $env:TEMP 'codex-skills'
+$env:COPILOT_SKILLS_HOME = Join-Path $env:TEMP 'copilot-skills'
 .\scripts\install.ps1 --dry-run
 ```
 

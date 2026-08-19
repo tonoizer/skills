@@ -12,9 +12,10 @@ Options:
   --dry-run          Show what would change.
   --skills-only      Install only skills, not Claude slash commands.
   --commands-only    Install only Claude slash commands.
-  --codex-only       Install skills only to AGENT_SKILLS_HOME.
+  --codex-only       Install skills only to CODEX_SKILLS_HOME.
   --claude-only      Install skills only to CLAUDE_SKILLS_HOME and Claude commands.
   --cursor-only      Install skills only to CURSOR_SKILLS_HOME.
+  --copilot-only     Install skills only to COPILOT_SKILLS_HOME.
   --no-prune         Do not remove previously managed skills missing from this repo.
   -h, --help         Show this help.
 
@@ -24,6 +25,7 @@ Environment:
   CLAUDE_COMMANDS_HOME   Default: $HOME/.claude/commands
   CURSOR_SKILLS_HOME     Default: $HOME/.cursor/skills
   CODEX_SKILLS_HOME      Default: $HOME/.codex/skills
+  COPILOT_SKILLS_HOME    Default: $HOME/.copilot/skills
 
 The script writes a .agent-workflow-pack.manifest file in each target skills
 directory so future runs can prune only skills previously installed by this pack.
@@ -39,6 +41,7 @@ claude_skills_home="${CLAUDE_SKILLS_HOME:-$HOME/.claude/skills}"
 claude_commands_home="${CLAUDE_COMMANDS_HOME:-$HOME/.claude/commands}"
 cursor_skills_home="${CURSOR_SKILLS_HOME:-$HOME/.cursor/skills}"
 codex_skills_home="${CODEX_SKILLS_HOME:-$HOME/.codex/skills}"
+copilot_skills_home="${COPILOT_SKILLS_HOME:-$HOME/.copilot/skills}"
 
 dry_run=0
 install_skills=1
@@ -47,6 +50,7 @@ install_agent=1
 install_claude=1
 install_cursor=1
 install_codex=1
+install_copilot=1
 prune=1
 
 while [ "$#" -gt 0 ]; do
@@ -54,9 +58,10 @@ while [ "$#" -gt 0 ]; do
     --dry-run) dry_run=1 ;;
     --skills-only) install_commands=0 ;;
     --commands-only) install_skills=0 ;;
-    --codex-only) install_claude=0; install_cursor=0; install_agent=0; install_commands=0 ;;
-    --claude-only) install_agent=0; install_cursor=0; install_codex=0 ;;
-    --cursor-only) install_agent=0; install_claude=0; install_codex=0; install_commands=0 ;;
+    --codex-only) install_claude=0; install_cursor=0; install_copilot=0; install_agent=0; install_commands=0 ;;
+    --claude-only) install_agent=0; install_cursor=0; install_codex=0; install_copilot=0 ;;
+    --cursor-only) install_agent=0; install_claude=0; install_codex=0; install_copilot=0; install_commands=0 ;;
+    --copilot-only) install_agent=0; install_claude=0; install_codex=0; install_cursor=0; install_commands=0 ;;
     --no-prune) prune=0 ;;
     -h|--help) usage; exit 0 ;;
     *) printf 'Unknown option: %s\n\n' "$1" >&2; usage >&2; exit 2 ;;
@@ -162,6 +167,7 @@ if [ "$install_skills" -eq 1 ]; then
   [ "$install_claude" -eq 1 ] && install_skills_to "$claude_skills_home"
   [ "$install_cursor" -eq 1 ] && install_skills_to "$cursor_skills_home"
   [ "$install_codex" -eq 1 ] && install_skills_to "$codex_skills_home"
+  [ "$install_copilot" -eq 1 ] && install_skills_to "$copilot_skills_home"
 fi
 
 if [ "$install_commands" -eq 1 ]; then
