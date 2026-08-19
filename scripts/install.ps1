@@ -13,8 +13,9 @@ Options:
   --dry-run          Show what would change.
   --skills-only      Install only skills, not Claude slash commands.
   --commands-only    Install only Claude slash commands.
-  --codex-only       Install skills only to AGENT_SKILLS_HOME.
+  --codex-only       Install skills only to CODEX_SKILLS_HOME.
   --claude-only      Install skills only to CLAUDE_SKILLS_HOME and Claude commands.
+  --cursor-only      Install skills only to CURSOR_SKILLS_HOME.
   --no-prune         Do not remove previously managed skills missing from this repo.
   -h, --help         Show this help.
 
@@ -22,6 +23,8 @@ Environment:
   AGENT_SKILLS_HOME      Default: $HOME/.agents/skills
   CLAUDE_SKILLS_HOME     Default: $HOME/.claude/skills
   CLAUDE_COMMANDS_HOME   Default: $HOME/.claude/commands
+  CURSOR_SKILLS_HOME     Default: $HOME/.cursor/skills
+  CODEX_SKILLS_HOME      Default: $HOME/.codex/skills
 
 The script writes a .agent-workflow-pack.manifest file in each target skills
 directory so future runs can prune only skills previously installed by this pack.
@@ -106,6 +109,12 @@ function Assert-ConfiguredTargets {
         }
         if ($script:InstallClaude) {
             Assert-SafeTargetRoot -Name 'CLAUDE_SKILLS_HOME' -Path $script:ClaudeSkillsHome
+        }
+        if ($script:InstallCursor) {
+            Assert-SafeTargetRoot -Name 'CURSOR_SKILLS_HOME' -Path $script:CursorSkillsHome
+        }
+        if ($script:InstallCodex) {
+            Assert-SafeTargetRoot -Name 'CODEX_SKILLS_HOME' -Path $script:CodexSkillsHome
         }
     }
     if ($script:InstallCommands) {
@@ -390,6 +399,8 @@ $script:InstallSkills = $true
 $script:InstallCommands = $true
 $script:InstallAgent = $true
 $script:InstallClaude = $true
+$script:InstallCursor = $true
+$script:InstallCodex = $true
 $script:Prune = $true
 
 foreach ($option in @($args)) {
@@ -399,9 +410,21 @@ foreach ($option in @($args)) {
         '--commands-only' { $script:InstallSkills = $false }
         '--codex-only' {
             $script:InstallClaude = $false
+            $script:InstallCursor = $false
+            $script:InstallAgent = $false
             $script:InstallCommands = $false
         }
-        '--claude-only' { $script:InstallAgent = $false }
+        '--claude-only' {
+            $script:InstallAgent = $false
+            $script:InstallCursor = $false
+            $script:InstallCodex = $false
+        }
+        '--cursor-only' {
+            $script:InstallAgent = $false
+            $script:InstallClaude = $false
+            $script:InstallCodex = $false
+            $script:InstallCommands = $false
+        }
         '--no-prune' { $script:Prune = $false }
         '-h' { Show-Usage; exit 0 }
         '--help' { Show-Usage; exit 0 }
@@ -422,6 +445,8 @@ $userHome = Get-UserHome
 $script:AgentSkillsHome = Get-ConfiguredPath -Name 'AGENT_SKILLS_HOME' -Default (Join-Path $userHome '.agents\skills')
 $script:ClaudeSkillsHome = Get-ConfiguredPath -Name 'CLAUDE_SKILLS_HOME' -Default (Join-Path $userHome '.claude\skills')
 $script:ClaudeCommandsHome = Get-ConfiguredPath -Name 'CLAUDE_COMMANDS_HOME' -Default (Join-Path $userHome '.claude\commands')
+$script:CursorSkillsHome = Get-ConfiguredPath -Name 'CURSOR_SKILLS_HOME' -Default (Join-Path $userHome '.cursor\skills')
+$script:CodexSkillsHome = Get-ConfiguredPath -Name 'CODEX_SKILLS_HOME' -Default (Join-Path $userHome '.codex\skills')
 
 if (-not (Test-Path -LiteralPath $script:SourceSkills -PathType Container)) {
     [Console]::Error.WriteLine('Missing source skills directory: {0}' -f $script:SourceSkills)
@@ -436,6 +461,12 @@ if ($script:InstallSkills) {
     }
     if ($script:InstallClaude) {
         Install-SkillsTo -Target $script:ClaudeSkillsHome
+    }
+    if ($script:InstallCursor) {
+        Install-SkillsTo -Target $script:CursorSkillsHome
+    }
+    if ($script:InstallCodex) {
+        Install-SkillsTo -Target $script:CodexSkillsHome
     }
 }
 
