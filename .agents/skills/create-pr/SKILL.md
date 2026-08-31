@@ -71,6 +71,7 @@ EOF
   --assignee "$LOGIN"
 ```
 
+Do not pass `--draft`; open a ready PR, and if it is still a draft after create, run `gh pr ready`.
 Never leave the PR unassigned. Prefer `--assignee "$LOGIN"` on create. If the PR already exists without an assignee, run `gh pr edit --add-assignee "$LOGIN"`.
 11. Read the initial PR checks and report their current state.
 
