@@ -72,11 +72,13 @@ tools, not required stages in the engineering loop.
 
 ## Supported Agent Hosts
 
-- Codex, Cursor, OpenCode, and GitHub Copilot can read the canonical skills
-  installed under `.agents/skills`.
-- Claude Code reads the same skills through `.claude/skills`, which points to
-  the canonical `.agents/skills` directory.
-- Keep `.agents/skills` as the source of truth so the two clients do not drift.
+- **Generic** (OpenCode, etc.) read skills from `~/.agents/skills`.
+- **Claude Code** reads skills from `~/.claude/skills`.
+- **Cursor** reads skills from `~/.cursor/skills`.
+- **Codex** reads skills from `~/.codex/skills`.
+- **GitHub Copilot / VS Code** reads skills from `~/.copilot/skills`.
+- The installer syncs the same skill set to all five locations so every host
+  stays in sync. Keep `.agents/skills` as the source of truth.
 
 ## Source And License Notes
 
@@ -120,22 +122,55 @@ scripts/install.sh --dry-run
 
 Defaults:
 
-- skills sync to `$HOME/.agents/skills` and `$HOME/.claude/skills`;
+- skills sync to `$HOME/.agents/skills`, `$HOME/.claude/skills`,
+  `$HOME/.cursor/skills`, `$HOME/.codex/skills`, and `$HOME/.copilot/skills`;
 - slash wrappers sync to `$HOME/.claude/commands`;
 - only skills previously installed by this pack are pruned when removed here.
 
 Both installers support `--dry-run`, `--skills-only`, `--commands-only`,
-`--codex-only`, `--claude-only`, `--no-prune`, and `-h`/`--help`.
-Override the destinations with `AGENT_SKILLS_HOME`, `CLAUDE_SKILLS_HOME`, and
-`CLAUDE_COMMANDS_HOME`. In PowerShell, set them for the current session, for
-example:
+`--codex-only`, `--claude-only`, `--cursor-only`, `--copilot-only`,
+`--no-prune`, and `-h`/`--help`.
+Override the destinations with `AGENT_SKILLS_HOME`, `CLAUDE_SKILLS_HOME`,
+`CLAUDE_COMMANDS_HOME`, `CURSOR_SKILLS_HOME`, `CODEX_SKILLS_HOME`, and
+`COPILOT_SKILLS_HOME`.
+In PowerShell, set them for the current session, for example:
 
 ```powershell
 $env:AGENT_SKILLS_HOME = Join-Path $env:TEMP 'agent-skills'
 $env:CLAUDE_SKILLS_HOME = Join-Path $env:TEMP 'claude-skills'
 $env:CLAUDE_COMMANDS_HOME = Join-Path $env:TEMP 'claude-commands'
+$env:CURSOR_SKILLS_HOME = Join-Path $env:TEMP 'cursor-skills'
+$env:CODEX_SKILLS_HOME = Join-Path $env:TEMP 'codex-skills'
+$env:COPILOT_SKILLS_HOME = Join-Path $env:TEMP 'copilot-skills'
 .\scripts\install.ps1 --dry-run
 ```
+
+## Agent Plugin (Agent Plugins 1.0.0)
+
+Build a portable [Agent Plugins 1.0.0](https://agent-plugins.org/) directory
+that any conformant client can load — ChatGPT, Codex, Cursor, VS Code,
+GitHub Copilot, Kiro, and others.
+
+```bash
+scripts/build-plugin.sh
+```
+
+```powershell
+.\scripts\build-plugin.ps1
+```
+
+This produces `dist/tonoizer-agent-skills/` with a `plugin.json` manifest and
+a `skills/` directory. Copy it into your client's plugin path:
+
+```bash
+cp -r dist/tonoizer-agent-skills ~/.agents/plugins/tonoizer-agent-skills
+```
+
+```powershell
+Copy-Item -Recurse dist\tonoizer-agent-skills $env:USERPROFILE\.agents\plugins\tonoizer-agent-skills
+```
+
+Preview with `--dry-run` / `-DryRun`.
 
 ## Slash Commands
 
